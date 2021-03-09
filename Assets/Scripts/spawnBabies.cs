@@ -7,20 +7,17 @@ public class spawnBabies : MonoBehaviour {
 	public float minTime,maxTime;
 	public int amountOfBabies;
 	public bool checkForEndOfGame;
-	public int probOfbaby1,probOfbaby2,probOfbaby3;
-	// Use this for initialization
+	public int probOfbaby1,probOfbaby2,probOfbaby3;	
 
 	void Start () {
 		StartCoroutine ("SpawnBaby");
 	}
 
-	
-	// Update is called once per frame
 	IEnumerator SpawnBaby () {
 		int pickBaby = pickABaby ();
 
 		if (amountOfBabies < gameController.control.totalBabies) {
-			GameObject Baby = Instantiate (baby[pickBaby], transform.position, Quaternion.identity) as GameObject;
+			GameObject Baby = Instantiate (baby[pickBaby], transform.position, Quaternion.identity);
 			Baby.tag = "BabyEnemy";
 			amountOfBabies++;
 			gameController.control.babyInt = gameController.control.totalBabies - amountOfBabies;
@@ -53,7 +50,7 @@ public class spawnBabies : MonoBehaviour {
 	}
 
 
-
+	//TODO AAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHHAHHAHAHAHAHHAAJHADJHASDJASHDFJASHDASJFAJF NO.
 	void Update(){
 		if (checkForEndOfGame) {
 			if (GameObject.FindGameObjectsWithTag ("BabyEnemy").Length == 0) {
@@ -63,13 +60,11 @@ public class spawnBabies : MonoBehaviour {
 		}
 	}
 
-
 	public void IncreaseSpeed(float speedMul){
 		if (maxTime > minTime) {
 			maxTime *= speedMul;
 		}
 	}
-
 
 	public void halt(){
 		CancelInvoke ();

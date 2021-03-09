@@ -1,18 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class volumeWorkAround : MonoBehaviour {
 	public bool musicControl;
-
-	// Use this for initialization
+	AudioSource audioSource;
 	void Start () {
-		if (accountForLevels.control != null && this.gameObject.GetComponent<AudioSource> () != null) {
-			if(musicControl == true){
-				this.gameObject.GetComponent<AudioSource> ().volume = accountForLevels.control.musicVolume;
-			}else{
-				this.gameObject.GetComponent<AudioSource>().volume = accountForLevels.control.fxVolume;
-			}
-		}
+		audioSource = GetComponent<AudioSource>();
+		if (accountForLevels.control && audioSource)
+			audioSource.volume = musicControl ? accountForLevels.control.musicVolume : accountForLevels.control.fxVolume;
 	}
 }

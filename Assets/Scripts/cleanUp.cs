@@ -31,10 +31,10 @@ public class cleanUp : MonoBehaviour {
 			if (Input.GetKeyDown (KeyCode.Return)) {
 				if (!restartwithEnter) {
 					if(myType == typeOfScreen.win){
-						this.gameObject.GetComponent<SceneMan> ().ButtonClick ("nextLevel");
+						this.gameObject.GetComponent<MainMenu> ().ButtonClick ("nextLevel");
 					}
 					if(myType == typeOfScreen.lost){
-						this.gameObject.GetComponent<SceneMan> ().ButtonClick ("levelRestart");
+						this.gameObject.GetComponent<MainMenu> ().ButtonClick ("levelRestart");
 					}
 					restartwithEnter = true;
 				}

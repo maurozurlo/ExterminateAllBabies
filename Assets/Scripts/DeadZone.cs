@@ -22,7 +22,7 @@ public class DeadZone : MonoBehaviour {
 			} else {
 				damageForThisLevel = col.gameObject.GetComponentInParent<Baby> ().damage;
 			}
-			StartCoroutine (gameController.control.takeDamage(damageForThisLevel,Color.red));
+			gameController.control.takeDamage(damageForThisLevel,Color.red);
 			}
 		//powerUps
 		if (col.name == "powerUp") {

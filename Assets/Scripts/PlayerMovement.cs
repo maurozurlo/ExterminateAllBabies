@@ -35,20 +35,21 @@ public class PlayerMovement : MonoBehaviour
         float hor = -CrossPlatformInputManager.VirtualAxisReference("Horizontal").GetValue;
         float ver = CrossPlatformInputManager.VirtualAxisReference("Vertical").GetValue;
 
-        Vector3 movementX = new Vector3(hor, 0, 0) * Time.deltaTime * speed;
-        Vector3 movementY = new Vector3(0, ver, 0) * Time.deltaTime * speed;
+        Vector3 movementX = new Vector3(hor, 0) * Time.deltaTime * speed;
+        Vector3 movementY = new Vector3(0, ver) * Time.deltaTime * speed;
+
         if (gameController.control.currentState != gameController.states.paused)
         {
             if (!dead)
             {
-                if (isWithinRange(transform.position.x + movementX.x, minX, maxX))
+                if (IsWithinRange(transform.position.x + movementX.x, minX, maxX))
                 {
-                    this.transform.position += movementX;
+                    transform.position += movementX;
                 }
 
-                if (isWithinRange(transform.position.y + movementY.y, minY, maxY))
+                if (IsWithinRange(transform.position.y + movementY.y, minY, maxY))
                 {
-                    this.transform.position += movementY;
+                    transform.position += movementY;
                 }
 
                 if (Input.GetKeyDown(KeyCode.Space))
@@ -65,16 +66,9 @@ public class PlayerMovement : MonoBehaviour
         StartCoroutine("Hit");
     }
 
-    public bool isWithinRange(float val, float min, float max)
+    public bool IsWithinRange(float val, float min, float max)
     {
-        if (val >= min && val <= max)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return val >= min && val <= max;
     }
 
 
@@ -103,7 +97,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
-    public void returnVisualsToNormal()
+    public void ReturnVisualsToNormal()
     {
         this.GetComponentInChildren<SpriteRenderer>().sprite = spriteOrg;
     }

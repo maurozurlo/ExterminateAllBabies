@@ -6,36 +6,43 @@ using UnityEngine.SceneManagement;
 
 public class gameController : MonoBehaviour
 {
+    //Game states
     public enum states
     {
         juststarted, idle, hitting, dead, paused
     };
     public states currentState;
+    public bool paused;
+
+    //UI
+    CameraFunctions cam;
     public Text scoreText;
     public Text babyText;
     public Text pauseText, cuentaRegresiva;
     public Image damageScreen;
     public Button menuBut;
 
-    public bool paused;
+    //Game config
     public int babySpeedForThisLevel = 3;
     public int scoreInt;
     public int babyInt;
     public int totalBabies;
     public float speedMultiplier;
-    public static gameController control;
-    public GameObject babyControl;
     public float delay;
     public int howManyInARow;
+
+    //Singleton
+    public static gameController control;
+    public GameObject babyControl;
+
+    //Audio
     AudioSource AS;
     public AudioClip[] hurtSound;
     public AudioClip youWon, bombSound, snifSound;
     public bool upsideDownWorld;
 
 
-
-    [Header("Power Up Stuff")]
-
+    //Power ups
     public float powerUpTime = 2;
     public enum powerUpActivated
     {
@@ -47,7 +54,6 @@ public class gameController : MonoBehaviour
     float orgSpeedForMouse;
     public float frozenMouseSpeed, flashMouseSpeed;
 
-    // Use this for initialization
     void Awake()
     {
         if (control == null)
@@ -71,6 +77,9 @@ public class gameController : MonoBehaviour
         music = GameObject.Find("Music");
         orgSpeedForMouse = player.GetComponent<PlayerMovement>().speed;
         Time.timeScale = 1.0f;
+
+        cam = Camera.main.GetComponent<CameraFunctions>();
+        if (!cam) Debug.LogError("Camera functions not set up");
     }
 
     void Update()
@@ -79,13 +88,9 @@ public class gameController : MonoBehaviour
             PauseRoutine();
     }
 
-    // Update is called once per frame
-    public void UpdateUI()
-    {
-        babyText.text = "/ " + babyInt.ToString();
-        scoreText.text = " = " + scoreInt.ToString();
-    }
 
+
+    //TODO: Review this function...
     public void PauseRoutine()
     {
         if (currentState != states.juststarted)
@@ -165,30 +170,39 @@ public class gameController : MonoBehaviour
 
     }
 
-    public IEnumerator takeDamage(int dmgToTake, Color col)
+    public void UpdateUI()
     {
-        scoreInt = scoreInt - dmgToTake;
-        damageScreen.color = col;
-
-        if (scoreInt > -1)
+        babyText.text = "/ " + babyInt.ToString();
+        scoreText.text = "= " + scoreInt.ToString();
+    }
+    public void takeDamage(int dmgToTake, Color col)
+    {
+        scoreInt -= dmgToTake;
+        UpdateUI();
+        // Check if dead
+        if (scoreInt <= -1)
         {
-            UpdateUI();
-            howManyInARow = 0;
-            if (!AS.isPlaying)
-            {
-                AS.PlayOneShot(hurtSound[Random.Range(0, hurtSound.Length)]);
-            }
-            damageScreen.gameObject.SetActive(true);
-            damageScreen.GetComponent<ImgHandlers>().replayAnim();
-            yield return new WaitForSeconds(1);
-            damageScreen.gameObject.SetActive(false);
-        }
-        else
-        {
-            //game over
             currentState = states.dead;
             SceneManager.LoadScene("GameOver");
+            return;
         }
+        howManyInARow = 0;
+        if (!AS.isPlaying){
+            AS.PlayOneShot(hurtSound[Random.Range(0, hurtSound.Length)]);
+        }
+        // Camera shake
+        if(dmgToTake > 0) StartCoroutine(cam.Shake(.4f, .2f));
+        // Damage Screen
+        StartCoroutine(DamageScreen(col));
+    }
+
+    IEnumerator DamageScreen(Color col)
+    {
+        damageScreen.color = col;
+        damageScreen.gameObject.SetActive(true);
+        damageScreen.GetComponent<ImgHandlers>().replayAnim();
+        yield return new WaitForSeconds(1);
+        damageScreen.gameObject.SetActive(false); 
     }
 
 
@@ -220,7 +234,6 @@ public class gameController : MonoBehaviour
     {
         int damageForThisLevel;
 
-
         if (accountForLevels.control != null)
         {
             damageForThisLevel = myDamage * accountForLevels.control.currentLevel;
@@ -230,29 +243,23 @@ public class gameController : MonoBehaviour
             damageForThisLevel = myDamage;
         }
 
-        if (pw != powerUpActivated.flash)
-        {
-
-
-        }
-
         switch (pw)
         {
             case powerUpActivated.bomb:
                 Debug.Log("got hit by bomb");
-                StartCoroutine(gameController.control.takeDamage(damageForThisLevel, Color.red));
+                takeDamage(damageForThisLevel, Color.red);
                 AS.PlayOneShot(bombSound);
                 break;
             case powerUpActivated.flash:
                 Debug.Log("got hit by flash");
-                StartCoroutine(gameController.control.takeDamage(damageForThisLevel, Color.yellow));
+                takeDamage(damageForThisLevel, Color.yellow);
                 player.GetComponent<PlayerMovement>().speed = flashMouseSpeed;
                 player.GetComponent<PlayerMovement>().changeVisuals("flash");
                 music.GetComponent<AudioSource>().pitch = 2;
                 StartCoroutine("returnPlayerToNormal");
                 break;
             case powerUpActivated.ice:
-                StartCoroutine(gameController.control.takeDamage(damageForThisLevel, Color.cyan));
+                takeDamage(damageForThisLevel, Color.cyan);
                 player.GetComponent<PlayerMovement>().speed = frozenMouseSpeed;
                 player.GetComponent<PlayerMovement>().changeVisuals("ice");
                 music.GetComponent<AudioSource>().pitch = .5f;
@@ -261,7 +268,7 @@ public class gameController : MonoBehaviour
                 break;
             case powerUpActivated.lsd:
                 Debug.Log("got hit by lsd");
-                StartCoroutine(gameController.control.takeDamage(damageForThisLevel, Color.magenta));
+                takeDamage(damageForThisLevel, Color.magenta);
                 Instantiate(lsdCamera, new Vector3(0, 4.2f, -0.24f), Quaternion.identity);
                 music.GetComponent<AudioSource>().pitch = 5;
                 AS.PlayOneShot(snifSound);
@@ -275,7 +282,7 @@ public class gameController : MonoBehaviour
         yield return new WaitForSeconds(powerUpTime);
         music.GetComponent<AudioSource>().pitch = 1;
         player.GetComponent<PlayerMovement>().speed = orgSpeedForMouse;
-        player.GetComponent<PlayerMovement>().returnVisualsToNormal();
+        player.GetComponent<PlayerMovement>().ReturnVisualsToNormal();
     }
 
     public void returnMusicToNormal()

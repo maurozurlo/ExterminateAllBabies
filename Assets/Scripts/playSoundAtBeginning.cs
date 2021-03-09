@@ -26,7 +26,7 @@ public class playSoundAtBeginning : MonoBehaviour {
 			yield return new WaitForSeconds (exterminateBabies.length + delay);
 			PlayMusic ();
 		}
-		}
+	}
 
 	void PlayMusic(){
 		if (accountForLevels.control != null) {
