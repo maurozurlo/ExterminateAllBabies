@@ -18,7 +18,7 @@ public class MainMenu : MonoBehaviour {
 		AS = gameObject.AddComponent<AudioSource> ();
 		if (accountForLevels.control && tauntToggle) {
 			// Taunts
-			bool taunt = PlayerPrefs.HasKey("taunt") ? System.Convert.ToBoolean(PlayerPrefs.GetInt("taunt")) : true;
+			bool taunt = !PlayerPrefs.HasKey("taunt") || System.Convert.ToBoolean(PlayerPrefs.GetInt("taunt"));
 			tauntToggle.isOn = taunt;
 			accountForLevels.control.taunt = taunt;
 			// FX
@@ -33,6 +33,7 @@ public class MainMenu : MonoBehaviour {
 	
 	// Update is called once per frame
 	public void ButtonClick (string levelTo) {
+		Debug.Log("Hey");
 		if (!AS.isPlaying && click != null) {
 			AS.PlayOneShot (click);
 		}
@@ -43,6 +44,8 @@ public class MainMenu : MonoBehaviour {
 		if (click != null) {
 			yield return new WaitForSeconds (click.length);
 		}
+
+		//if (levelTo.Contains("level")) Debug.Log("AA");
 		//TODO AAAAAAAAAAAAAAAAAAAAAAAAAAA
 		switch (levelTo) {
 		case "quit":
