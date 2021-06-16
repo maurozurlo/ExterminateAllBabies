@@ -33,7 +33,6 @@ public class MainMenu : MonoBehaviour {
 	
 	// Update is called once per frame
 	public void ButtonClick (string levelTo) {
-		Debug.Log("Hey");
 		if (!AS.isPlaying && click != null) {
 			AS.PlayOneShot (click);
 		}
@@ -44,13 +43,7 @@ public class MainMenu : MonoBehaviour {
 		if (click != null) {
 			yield return new WaitForSeconds (click.length);
 		}
-
-		//if (levelTo.Contains("level")) Debug.Log("AA");
-		//TODO AAAAAAAAAAAAAAAAAAAAAAAAAAA
 		switch (levelTo) {
-		case "quit":
-			Application.Quit ();
-			break;
 		case "tutorial":
 			accountForLevels.control.currentLevel = 0;
 			SceneManager.LoadScene (levelTo);
@@ -90,18 +83,6 @@ public class MainMenu : MonoBehaviour {
 				levelToRestart = "level1";
 			}
 			SceneManager.LoadScene (levelToRestart);
-			break;
-		case "select":
-			turnOffAllButtons ();
-			selectLevel.SetActive (true);
-			break;
-		case "options":
-			turnOffAllButtons ();
-			optionsPanel.SetActive (true);
-			break;
-		case "help":
-			turnOffAllButtons ();
-			helpPanel.SetActive (true);
 			break;
 		case "credits":
 			turnOffAllButtons ();
