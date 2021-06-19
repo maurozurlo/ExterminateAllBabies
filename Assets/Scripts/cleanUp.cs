@@ -25,16 +25,16 @@ public class cleanUp : MonoBehaviour {
 		}
 	}
 
-
+	// ??? no idea
 	void Update(){
 		if (activateRestart) {
 			if (Input.GetKeyDown (KeyCode.Return)) {
 				if (!restartwithEnter) {
 					if(myType == typeOfScreen.win){
-						this.gameObject.GetComponent<MainMenu> ().ButtonClick ("nextLevel");
+						//this.gameObject.GetComponent<MainMenu> ().ButtonClick ("nextLevel");
 					}
 					if(myType == typeOfScreen.lost){
-						this.gameObject.GetComponent<MainMenu> ().ButtonClick ("levelRestart");
+						//this.gameObject.GetComponent<MainMenu> ().ButtonClick ("levelRestart");
 					}
 					restartwithEnter = true;
 				}
