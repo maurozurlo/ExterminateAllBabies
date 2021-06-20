@@ -7,12 +7,11 @@ using UnityEngine.SceneManagement;
 public class gameController : MonoBehaviour
 {
     //Game states
-    public enum states
-    {
-        juststarted, idle, hitting, dead, paused
+    // New implementation
+    public enum GameState {
+        idle, play, pause, end
     };
-    public states currentState;
-    public bool paused;
+    public GameState gameState;
 
     //UI
     CameraFunctions cam;
@@ -38,48 +37,26 @@ public class gameController : MonoBehaviour
     //Audio
     AudioSource AS;
     public AudioClip[] hurtSound;
-    public AudioClip youWon, bombSound, snifSound;
+    public AudioClip youWon;
     public bool upsideDownWorld;
-
-
-    //Power ups
-    public float powerUpTime = 2;
-    public enum powerUpActivated
-    {
-        none, flash, bomb, lsd, ice
-    }
-    public powerUpActivated powerUp;
-    public GameObject lsdCamera;
-    GameObject player, music;
-    float orgSpeedForMouse;
-    public float frozenMouseSpeed, flashMouseSpeed;
 
     void Awake()
     {
+        // Singleton Pattern
         if (control == null)
-        {
             control = this;
-        }
         else
-        {
-            Destroy(this.gameObject);
-        }
-        this.currentState = states.juststarted;
-        UpdateUI();
-        StartCoroutine("SetUpStuff");
-        AS = this.gameObject.AddComponent<AudioSource>();
+            Destroy(gameObject);
+        // Initialize Level
+        AS = gameObject.AddComponent<AudioSource>();
         if (accountForLevels.control != null)
-        {
             AS.volume = accountForLevels.control.fxVolume;
-        }
-
-        player = GameObject.Find("Player");
-        music = GameObject.Find("Music");
-        orgSpeedForMouse = player.GetComponent<PlayerMovement>().speed;
-        Time.timeScale = 1.0f;
-
         cam = Camera.main.GetComponent<CameraFunctions>();
         if (!cam) Debug.LogError("Camera functions not set up");
+        // Countdown + GameState
+        gameState = GameState.idle;
+        UpdateUI();
+        StartCoroutine("SetUpStuff");
     }
 
     void Update()
@@ -93,23 +70,61 @@ public class gameController : MonoBehaviour
     //TODO: Review this function...
     public void PauseRoutine()
     {
-        if (currentState != states.juststarted)
+        if (gameState == GameState.play)
         {
-            if (!paused)
-            {
-                Pause();
-                paused = true;
-                pauseText.gameObject.SetActive(true);
-                menuBut.gameObject.SetActive(true);
-            }
-            else
-            {
-                Resume();
-                paused = false;
-                pauseText.gameObject.SetActive(false);
-                menuBut.gameObject.SetActive(false);
-            }
+            Pause();
+            return;
+            
         }
+        if(gameState == GameState.pause)
+        {
+            Resume();
+            return;
+        }
+    }
+
+    public void Pause()
+    {
+        gameState = GameState.pause;
+        babyControl.GetComponent<spawnBabies>().halt();
+        babyControl.GetComponent<spawnPowerUps>().halt();
+
+        GameObject[] babiesNow = GameObject.FindGameObjectsWithTag("BabyEnemy");
+        foreach (var item in babiesNow)
+        {
+            item.GetComponent<Baby>().kill();
+            item.GetComponentInChildren<BabyAnimation>().alive = false;
+        }
+
+        GameObject[] pUps = GameObject.FindGameObjectsWithTag("PowerUp");
+        foreach (var item in pUps)
+        {
+            item.GetComponent<genericPowerUp>().PausePU();
+        }
+        pauseText.gameObject.SetActive(true);
+        menuBut.gameObject.SetActive(true);
+    }
+
+    public void Resume()
+    {
+        gameState = GameState.play;
+        babyControl.GetComponent<spawnBabies>().resume();
+        GameObject[] babiesNow = GameObject.FindGameObjectsWithTag("BabyEnemy");
+        foreach (var item in babiesNow)
+        {
+            item.GetComponent<Baby>().revive();
+            item.GetComponentInChildren<BabyAnimation>().alive = true;
+        }
+
+        babyControl.GetComponent<spawnPowerUps>().resume();
+        GameObject[] pUps = GameObject.FindGameObjectsWithTag("PowerUp");
+        foreach (var item in pUps)
+        {
+            item.GetComponent<genericPowerUp>().revive();
+        }
+        pauseText.gameObject.SetActive(false);
+        menuBut.gameObject.SetActive(false);
+
     }
 
 
@@ -127,47 +142,6 @@ public class gameController : MonoBehaviour
         babyControl.GetComponent<spawnPowerUps>().enabled = true;
         currentState = states.idle;
         InvokeRepeating("IncreaseSpeed", 0, 5);
-    }
-
-    public void Pause()
-    {
-        currentState = states.paused;
-        babyControl.GetComponent<spawnBabies>().halt();
-        babyControl.GetComponent<spawnPowerUps>().halt();
-
-        GameObject[] babiesNow = GameObject.FindGameObjectsWithTag("BabyEnemy");
-        foreach (var item in babiesNow)
-        {
-            item.GetComponent<Baby>().kill();
-            item.GetComponentInChildren<BabyAnimation>().alive = false;
-        }
-
-        GameObject[] pUps = GameObject.FindGameObjectsWithTag("PowerUp");
-        foreach (var item in pUps)
-        {
-            item.GetComponent<genericPowerUp>().PausePU();
-        }
-
-    }
-
-    public void Resume()
-    {
-        currentState = states.idle;
-        babyControl.GetComponent<spawnBabies>().resume();
-        GameObject[] babiesNow = GameObject.FindGameObjectsWithTag("BabyEnemy");
-        foreach (var item in babiesNow)
-        {
-            item.GetComponent<Baby>().revive();
-            item.GetComponentInChildren<BabyAnimation>().alive = true;
-        }
-
-        babyControl.GetComponent<spawnPowerUps>().resume();
-        GameObject[] pUps = GameObject.FindGameObjectsWithTag("PowerUp");
-        foreach (var item in pUps)
-        {
-            item.GetComponent<genericPowerUp>().revive();
-        }
-
     }
 
     public void UpdateUI()
@@ -229,61 +203,12 @@ public class gameController : MonoBehaviour
         babyControl.GetComponent<spawnBabies>().IncreaseSpeed(speedMultiplier);
     }
 
-
-    public void activatePowerUp(powerUpActivated pw, int myDamage)
+    public void BabyWasSpawned(int spawnedBabies)
     {
-        int damageForThisLevel;
-
-        if (accountForLevels.control != null)
-        {
-            damageForThisLevel = myDamage * accountForLevels.control.currentLevel;
-        }
-        else
-        {
-            damageForThisLevel = myDamage;
-        }
-
-        switch (pw)
-        {
-            case powerUpActivated.bomb:
-                Debug.Log("got hit by bomb");
-                takeDamage(damageForThisLevel, Color.red);
-                AS.PlayOneShot(bombSound);
-                break;
-            case powerUpActivated.flash:
-                Debug.Log("got hit by flash");
-                takeDamage(damageForThisLevel, Color.yellow);
-                player.GetComponent<PlayerMovement>().speed = flashMouseSpeed;
-                player.GetComponent<PlayerMovement>().changeVisuals("flash");
-                music.GetComponent<AudioSource>().pitch = 2;
-                StartCoroutine("returnPlayerToNormal");
-                break;
-            case powerUpActivated.ice:
-                takeDamage(damageForThisLevel, Color.cyan);
-                player.GetComponent<PlayerMovement>().speed = frozenMouseSpeed;
-                player.GetComponent<PlayerMovement>().changeVisuals("ice");
-                music.GetComponent<AudioSource>().pitch = .5f;
-                Debug.Log("got hit by ice");
-                StartCoroutine("returnPlayerToNormal");
-                break;
-            case powerUpActivated.lsd:
-                Debug.Log("got hit by lsd");
-                takeDamage(damageForThisLevel, Color.magenta);
-                Instantiate(lsdCamera, new Vector3(0, 4.2f, -0.24f), Quaternion.identity);
-                music.GetComponent<AudioSource>().pitch = 5;
-                AS.PlayOneShot(snifSound);
-                break;
-        }
+        babyInt = totalBabies - spawnedBabies;
+        UpdateUI();
     }
-
-
-    IEnumerator returnPlayerToNormal()
-    {
-        yield return new WaitForSeconds(powerUpTime);
-        music.GetComponent<AudioSource>().pitch = 1;
-        player.GetComponent<PlayerMovement>().speed = orgSpeedForMouse;
-        player.GetComponent<PlayerMovement>().ReturnVisualsToNormal();
-    }
+    
 
     public void returnMusicToNormal()
     {

@@ -14,24 +14,30 @@ public class PlayerMovement : MonoBehaviour
     public float secondsToWait;
     public Sprite frozenMaterial, flashMaterial;
     Sprite spriteOrg;
+    SpriteRenderer spriteRenderer;
     public GameObject wasp;
     AudioSource AS;
     public AudioClip swat;
-
+    float orgSpeedForMouse;
     void Start()
     {
-        AS = this.gameObject.AddComponent<AudioSource>();
+        AS = gameObject.AddComponent<AudioSource>();
         if (accountForLevels.control != null)
         {
             AS.volume = accountForLevels.control.fxVolume;
         }
-        spriteOrg = this.GetComponentInChildren<SpriteRenderer>().sprite;
+
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        spriteOrg = spriteRenderer.sprite;
+    }
+
+    void ChangeSprite(Sprite sprite)
+    {
+        spriteRenderer.sprite = sprite;
     }
 
     void Update()
     {
-        //TODO find out if this works on mobile	
-        //hor/ver should be CrossPlatformInputManager.GetAxis ("Horizontal")?
         float hor = -CrossPlatformInputManager.VirtualAxisReference("Horizontal").GetValue;
         float ver = CrossPlatformInputManager.VirtualAxisReference("Vertical").GetValue;
 
@@ -107,10 +113,10 @@ public class PlayerMovement : MonoBehaviour
         switch (mySkin)
         {
             case "ice":
-                this.GetComponentInChildren<SpriteRenderer>().sprite = frozenMaterial;
+                GetComponentInChildren<SpriteRenderer>().sprite = frozenMaterial;
                 break;
             case "flash":
-                this.GetComponentInChildren<SpriteRenderer>().sprite = flashMaterial;
+                GetComponentInChildren<SpriteRenderer>().sprite = flashMaterial;
                 break;
         }
     }
