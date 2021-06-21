@@ -20,7 +20,7 @@ public class Baby : MonoBehaviour {
 		AS = this.gameObject.AddComponent<AudioSource> ();
 		StartCoroutine("RiseUp");
 		StartCoroutine("PlayRandSound");
-		babySpeed = gameController.control.babySpeedForThisLevel;
+		babySpeed = GameController.control.babySpeedForThisLevel;
 
 		if (accountForLevels.control != null) {
 			AS.volume = accountForLevels.control.fxVolume;

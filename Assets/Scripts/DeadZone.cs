@@ -12,6 +12,22 @@ public class DeadZone : MonoBehaviour {
 	public float delay;
 	public int tauntToPlay;
 	public bool tauntsEnabled = true;
+	PowerUpController powerUpController;
+	void Start()
+    {
+		AS = this.gameObject.AddComponent<AudioSource>();
+		if (accountForLevels.control != null)
+		{
+			tauntsEnabled = accountForLevels.control.taunt;
+			AS.volume = accountForLevels.control.fxVolume;
+		}
+
+		if (!tauntsEnabled)
+		{
+			probabilidad = 0;
+		}
+		powerUpController = PowerUpController.control;
+    }
 
 	void OnTriggerEnter(Collider col){
 			if (col.name == "babyPlane") {
@@ -22,46 +38,17 @@ public class DeadZone : MonoBehaviour {
 			} else {
 				damageForThisLevel = col.gameObject.GetComponentInParent<Baby> ().damage;
 			}
-			gameController.control.takeDamage(damageForThisLevel,Color.red);
+			GameController.control.TakeDamage(damageForThisLevel,Color.red);
 			}
 		//powerUps
 		if (col.name == "powerUp") {
-			col.gameObject.GetComponent<genericPowerUp> ().kill ();
-			localPowerUp (col.gameObject,col.gameObject.GetComponent<genericPowerUp>().damage);
+			genericPowerUp currentPowerUp = col.gameObject.GetComponent<genericPowerUp>();
+			currentPowerUp.Kill ();
+			powerUpController.ActivatePowerUp(currentPowerUp.myType.ToString(), currentPowerUp.damage);
 		}
 
 		///Taunt
 		StartCoroutine ("TryAndPlay");
-	}
-
-
-	void localPowerUp(GameObject col, int damageToApply){
-		switch (col.GetComponent<genericPowerUp>().myType) {
-		case genericPowerUp.typeOfPowerUp.bomb:
-			gameController.control.activatePowerUp (gameController.powerUpActivated.bomb, damageToApply);
-			break;
-		case genericPowerUp.typeOfPowerUp.ice:
-			gameController.control.activatePowerUp (gameController.powerUpActivated.ice, damageToApply);
-			break;
-		case genericPowerUp.typeOfPowerUp.lsd:
-			gameController.control.activatePowerUp (gameController.powerUpActivated.lsd, damageToApply);
-			break;
-		case genericPowerUp.typeOfPowerUp.flash:
-			gameController.control.activatePowerUp (gameController.powerUpActivated.flash, damageToApply);
-			break;
-		}
-	}
-
-	void Start(){
-		AS = this.gameObject.AddComponent<AudioSource> ();
-		if (accountForLevels.control != null) {
-			tauntsEnabled = accountForLevels.control.taunt;
-			AS.volume = accountForLevels.control.fxVolume;
-		}
-
-		if (!tauntsEnabled) {
-			probabilidad = 0;
-		}
 	}
 
 	IEnumerator TryAndPlay(){

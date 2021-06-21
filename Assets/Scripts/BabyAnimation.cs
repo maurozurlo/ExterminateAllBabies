@@ -61,7 +61,7 @@ public class BabyAnimation : MonoBehaviour {
 
 
 	void Start(){
-		if (gameController.control.upsideDownWorld) {
+		if (GameController.control.upsideDownWorld) {
 			comboText.gameObject.transform.Rotate(new Vector3(0,0,-180));
 			shadowText.gameObject.transform.Rotate(new Vector3(0,0,-180));
 			multiplierText.gameObject.transform.Rotate(new Vector3(0,0,-180));
@@ -82,7 +82,7 @@ public class BabyAnimation : MonoBehaviour {
 		}
 
 		this.GetComponent<BoxCollider> ().enabled = false;
-		AddPoints (gameController.control.howManyInARow);
+		AddPoints (GameController.control.howManyInARow);
 		yield return new WaitForSeconds (2);
 		Destroy (this.transform.parent.gameObject);
 	}
@@ -157,9 +157,9 @@ public class BabyAnimation : MonoBehaviour {
 		}
 		if(clipToPlay != null)
 			AS2.PlayOneShot (clipToPlay);
-		gameController.control.scoreInt += scoreToAdd;
-		gameController.control.howManyInARow++;
-		gameController.control.UpdateUI();
+		GameController.control.scoreInt += scoreToAdd;
+		GameController.control.howManyInARow++;
+		GameController.control.UpdateUI();
 	}
 
 }

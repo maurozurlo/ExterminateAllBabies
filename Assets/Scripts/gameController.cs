@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class gameController : MonoBehaviour
+public class GameController : MonoBehaviour
 {
     //Game states
     // New implementation
@@ -25,14 +25,12 @@ public class gameController : MonoBehaviour
     public int babySpeedForThisLevel = 3;
     public int scoreInt;
     public int babyInt;
-    public int totalBabies;
     public float speedMultiplier;
     public float delay;
     public int howManyInARow;
 
     //Singleton
-    public static gameController control;
-    public GameObject babyControl;
+    public static GameController control;
 
     //Audio
     AudioSource AS;
@@ -43,10 +41,8 @@ public class gameController : MonoBehaviour
     void Awake()
     {
         // Singleton Pattern
-        if (control == null)
-            control = this;
-        else
-            Destroy(gameObject);
+        if (!control) control = this;
+        else Destroy(gameObject);
         // Initialize Level
         AS = gameObject.AddComponent<AudioSource>();
         if (accountForLevels.control != null)
@@ -64,10 +60,6 @@ public class gameController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
             PauseRoutine();
     }
-
-
-
-    //TODO: Review this function...
     public void PauseRoutine()
     {
         if (gameState == GameState.play)
@@ -86,21 +78,7 @@ public class gameController : MonoBehaviour
     public void Pause()
     {
         gameState = GameState.pause;
-        babyControl.GetComponent<spawnBabies>().halt();
-        babyControl.GetComponent<spawnPowerUps>().halt();
-
-        GameObject[] babiesNow = GameObject.FindGameObjectsWithTag("BabyEnemy");
-        foreach (var item in babiesNow)
-        {
-            item.GetComponent<Baby>().kill();
-            item.GetComponentInChildren<BabyAnimation>().alive = false;
-        }
-
-        GameObject[] pUps = GameObject.FindGameObjectsWithTag("PowerUp");
-        foreach (var item in pUps)
-        {
-            item.GetComponent<genericPowerUp>().PausePU();
-        }
+        Time.timeScale = 0;
         pauseText.gameObject.SetActive(true);
         menuBut.gameObject.SetActive(true);
     }
@@ -108,25 +86,10 @@ public class gameController : MonoBehaviour
     public void Resume()
     {
         gameState = GameState.play;
-        babyControl.GetComponent<spawnBabies>().resume();
-        GameObject[] babiesNow = GameObject.FindGameObjectsWithTag("BabyEnemy");
-        foreach (var item in babiesNow)
-        {
-            item.GetComponent<Baby>().revive();
-            item.GetComponentInChildren<BabyAnimation>().alive = true;
-        }
-
-        babyControl.GetComponent<spawnPowerUps>().resume();
-        GameObject[] pUps = GameObject.FindGameObjectsWithTag("PowerUp");
-        foreach (var item in pUps)
-        {
-            item.GetComponent<genericPowerUp>().revive();
-        }
+        Time.timeScale = 1;
         pauseText.gameObject.SetActive(false);
         menuBut.gameObject.SetActive(false);
-
     }
-
 
     IEnumerator SetUpStuff()
     {
@@ -135,12 +98,10 @@ public class gameController : MonoBehaviour
             cuentaRegresiva.text = (delay - i).ToString();
             yield return new WaitForSeconds(1);
         }
-        cuentaRegresiva.text = 0.ToString();
+        cuentaRegresiva.text = "DALEE!!!";
         yield return new WaitForSeconds(1);
         cuentaRegresiva.text = "";
-        babyControl.GetComponent<spawnBabies>().enabled = true;
-        babyControl.GetComponent<spawnPowerUps>().enabled = true;
-        currentState = states.idle;
+        gameState = GameState.play;
         InvokeRepeating("IncreaseSpeed", 0, 5);
     }
 
@@ -149,14 +110,14 @@ public class gameController : MonoBehaviour
         babyText.text = "/ " + babyInt.ToString();
         scoreText.text = "= " + scoreInt.ToString();
     }
-    public void takeDamage(int dmgToTake, Color col)
+    public void TakeDamage(int dmgToTake, Color col)
     {
         scoreInt -= dmgToTake;
         UpdateUI();
         // Check if dead
         if (scoreInt <= -1)
         {
-            currentState = states.dead;
+            gameState = GameState.end;
             SceneManager.LoadScene("GameOver");
             return;
         }
@@ -179,7 +140,6 @@ public class gameController : MonoBehaviour
         damageScreen.gameObject.SetActive(false); 
     }
 
-
     public void WeWon()
     {
         StartCoroutine("WinRoutine");
@@ -193,27 +153,14 @@ public class gameController : MonoBehaviour
         SceneManager.LoadScene("YouWon");
     }
 
-    public void StopPowerUps()
-    {
-        babyControl.GetComponent<spawnPowerUps>().halt();
-    }
-
     public void IncreaseSpeed()
     {
-        babyControl.GetComponent<spawnBabies>().IncreaseSpeed(speedMultiplier);
+        SpawnBabies.control.IncreaseSpeed(speedMultiplier);
     }
 
-    public void BabyWasSpawned(int spawnedBabies)
+    public GameState GetGameState()
     {
-        babyInt = totalBabies - spawnedBabies;
-        UpdateUI();
+        return gameState;
     }
-    
-
-    public void returnMusicToNormal()
-    {
-        music.GetComponent<AudioSource>().pitch = 1;
-    }
-
 
 }

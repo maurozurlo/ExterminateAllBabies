@@ -8,12 +8,11 @@ public class genericPowerUp : MonoBehaviour {
 	public float babySpeed;
 	public float maxX,minX,maxZ,minZ;
 	public float minTime,maxTime;
-	public enum typeOfPowerUp{
-		flash,ice,bomb,lsd
+	public enum TypeOfPowerUp{ 
+		flash,ice,bomb,lsd // TODO this could be done some other way...
 	}
-	public typeOfPowerUp myType;
+	public TypeOfPowerUp myType;
 
-	float disp;
 	AudioSource AS;
 	public AudioClip loopSound;
 	public int damage = 5;
@@ -24,11 +23,10 @@ public class genericPowerUp : MonoBehaviour {
 		transform.position = new Vector3 (Random.Range (minX, maxX), -3.53f,Random.Range (minZ, maxZ));
 		AS = this.gameObject.AddComponent<AudioSource> ();
 		StartCoroutine("RiseUp");
-		playLoopedSound();
+		PlayLoopedSound();
 		if (accountForLevels.control != null) {
 			AS.volume = accountForLevels.control.fxVolume;
 		}
-
 	}
 
 	IEnumerator RiseUp(){
@@ -46,7 +44,7 @@ public class genericPowerUp : MonoBehaviour {
 		}
 	}
 
-	public void kill(){
+	public void Kill(){
 		StopAllCoroutines ();
 		foreach (Renderer item in GetComponentsInChildren<Renderer>()) {
 			item.enabled = false;
@@ -55,12 +53,7 @@ public class genericPowerUp : MonoBehaviour {
 		Destroy (this.gameObject, 2f);
 	}
 
-	public void PausePU(){
-		StopAllCoroutines ();
-		AS.Pause ();
-	}
-
-	public void killWithWasp(){
+	public void KillWithWasp(){
 		StopAllCoroutines ();
 		Instantiate (explo, this.transform.position + new Vector3 (0, 0.8f, 0), Quaternion.identity);
 		foreach (Renderer item in GetComponentsInChildren<Renderer>()) {
@@ -74,18 +67,9 @@ public class genericPowerUp : MonoBehaviour {
 		Destroy (this.gameObject, deathSound.length);
 	}
 
-
-	public void revive(){
-		StartCoroutine("StartWalking");
-		AS.UnPause ();
-		//StartCoroutine("PlayRandSound");
-	}
-
-
-	void playLoopedSound(){
+	void PlayLoopedSound(){
 		AS.loop = true;
 		AS.clip = loopSound;
 		AS.Play ();
 	}
-
 }

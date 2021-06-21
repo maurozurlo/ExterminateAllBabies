@@ -80,7 +80,6 @@ public class lsdEffect : MonoBehaviour {
 		transform.localRotation = Quaternion.identity;//Set the local rotation to 0 when done, just to get rid of any fudging stuff.
 		isRunning = false;
 		Time.timeScale = 1;
-		gameController.control.returnMusicToNormal ();
 		Destroy (this.gameObject);
 	}
 

@@ -3,17 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class waspBabies : MonoBehaviour {
+	PlayerMovement playerMovement;
+	public GameObject player;
 
-	void OnTriggerEnter(Collider col){
-		if (gameController.control.currentState == gameController.states.hitting) {
+    private void Start()
+    {
+		playerMovement = player.GetComponent<PlayerMovement>();
+    }
+
+    void OnTriggerEnter(Collider col){
+		if (playerMovement.hitting) {
 			if (col.name == "babyPlane") {
 				col.gameObject.GetComponent<BabyAnimation> ().Hit ();
 				col.gameObject.GetComponentInParent<Baby> ().kill ();
 			}
-
-
 			if (col.name == "powerUp") {
-				col.gameObject.GetComponent<genericPowerUp> ().killWithWasp ();
+				col.gameObject.GetComponent<genericPowerUp> ().KillWithWasp ();
 			}
 		}
 	}

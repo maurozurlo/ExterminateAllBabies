@@ -1,18 +1,26 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class spawnBabies : MonoBehaviour {
+public class SpawnBabies : MonoBehaviour {
 	public GameObject[] baby;
-	public float minTime,maxTime; // Should be in gameController?
+	public float minTime,maxTime;
 
-	public int spawnedBabies;
+	public Vector2Int spawnedBabies;
 	public int probOfbaby1,probOfbaby2,probOfbaby3; // TODO: Use a weighted table instead...
 
-	gameController GameController;
+	GameController gameController;
+	public static SpawnBabies control;
 	
 	void Start () {
+		// Singleton
+		if (!control) control = this;
+		else Destroy(this);
+
+		
+		gameController = GameController.control;
+		Debug.Log($"GC: {gameController}");
+		Debug.Log(gameController.scoreInt.ToString());
 		StartCoroutine ("SpawnBaby");
-		GameController = gameController.control;
 	}
 
 	public void IncreaseSpeed(float speedMul)
@@ -21,17 +29,16 @@ public class spawnBabies : MonoBehaviour {
 	}
 
 	IEnumerator SpawnBaby () {
-		// Check if we can spawn babies
-		if (GameController.gameState != gameController.GameState.play) yield return null;
 		// Check if all babies have been spawned already
-		if (spawnedBabies == GameController.totalBabies) yield return null;
-
-		// Pick a random baby
-		GameObject Baby = Instantiate (baby[PickABaby()], transform.position, Quaternion.identity);
-		Baby.tag = "BabyEnemy";
-		spawnedBabies++;
-		GameController.BabyWasSpawned(spawnedBabies);
-
+		if (spawnedBabies.x == spawnedBabies.y) yield break;
+		// Only spawn babies if we're in play state, otherwise just wait and try again in x seconds
+		if (gameController.GetGameState() == GameController.GameState.play)
+        {
+			// Pick a random baby
+			GameObject Baby = Instantiate(baby[PickABaby()], transform.position, Quaternion.identity);
+			Baby.tag = "BabyEnemy";
+			spawnedBabies = new Vector2Int(spawnedBabies.x++, spawnedBabies.y);
+		}
 		yield return new WaitForSeconds (Random.Range (minTime, maxTime));
 		StartCoroutine ("SpawnBaby");
 	}
@@ -50,12 +57,4 @@ public class spawnBabies : MonoBehaviour {
 		}
 		return ourNumber;
 	}
-	
-	//TODO AAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHHAHHAHAHAHAHHAAJHADJHASDJASHDFJASHDASJFAJF NO.
-		//	if (checkForEndOfGame) {
-		//	if (GameObject.FindGameObjectsWithTag ("BabyEnemy").Length == 0) {
-		//		gameController.control.WeWon();
-		//		checkForEndOfGame = false;
-		//	}
-		//}
 }

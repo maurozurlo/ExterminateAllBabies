@@ -448,7 +448,6 @@ GameObject:
   - component: {fileID: 5848796893470402325}
   - component: {fileID: 5848796893470402324}
   - component: {fileID: 5848796893470402323}
-  - component: {fileID: 5848796893470402327}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -544,30 +543,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &5848796893470402327
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5848796893470402322}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a3f707c57f0fe57469153926d3400c0f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  startAfterXSeconds: 0
-  delay: 0
-  ButtonPanel: {fileID: 0}
-  tauntToggle: {fileID: 0}
-  musicSlid: {fileID: 0}
-  fxSlid: {fileID: 0}
-  selectLevel: {fileID: 0}
-  optionsPanel: {fileID: 0}
-  helpPanel: {fileID: 0}
-  creditsPanel: {fileID: 0}
-  subtitle: {fileID: 0}
-  click: {fileID: 0}
 --- !u!1 &5848796893902359210
 GameObject:
   m_ObjectHideFlags: 0
@@ -1035,7 +1010,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 5848796893470402327}
+      objectReference: {fileID: 0}
     - target: {fileID: 114398105584740736, guid: 9b34554c2c991b54b8cdfb16de4be410,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName

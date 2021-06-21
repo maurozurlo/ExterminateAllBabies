@@ -6,11 +6,10 @@ using UnityStandardAssets.CrossPlatformInput;
 public class PlayerMovement : MonoBehaviour
 {
 
-    public float displacementMax, displacementMin;
-    public float maxX, minX, maxY, minY;
+    public Vector2 max, min;
+    private float orgSpeed;
     public float speed;
     public bool hitting;
-    public bool dead;
     public float secondsToWait;
     public Sprite frozenMaterial, flashMaterial;
     Sprite spriteOrg;
@@ -18,7 +17,9 @@ public class PlayerMovement : MonoBehaviour
     public GameObject wasp;
     AudioSource AS;
     public AudioClip swat;
-    float orgSpeedForMouse;
+    GameController gameController;
+    public bool DEBUG_CONTROLS;
+
     void Start()
     {
         AS = gameObject.AddComponent<AudioSource>();
@@ -29,47 +30,45 @@ public class PlayerMovement : MonoBehaviour
 
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         spriteOrg = spriteRenderer.sprite;
-    }
-
-    void ChangeSprite(Sprite sprite)
-    {
-        spriteRenderer.sprite = sprite;
+        orgSpeed = speed;
+        gameController = GameController.control;
     }
 
     void Update()
     {
-        float hor = -CrossPlatformInputManager.VirtualAxisReference("Horizontal").GetValue;
-        float ver = CrossPlatformInputManager.VirtualAxisReference("Vertical").GetValue;
-
-        Vector3 movementX = new Vector3(hor, 0) * Time.deltaTime * speed;
-        Vector3 movementY = new Vector3(0, ver) * Time.deltaTime * speed;
-
-        if (gameController.control.currentState != gameController.states.paused)
-        {
-            if (!dead)
-            {
-                if (IsWithinRange(transform.position.x + movementX.x, minX, maxX))
-                {
-                    transform.position += movementX;
-                }
-
-                if (IsWithinRange(transform.position.y + movementY.y, minY, maxY))
-                {
-                    transform.position += movementY;
-                }
-
-                if (Input.GetKeyDown(KeyCode.Space))
-                {
-					StartHitting();
-                }
-            }
-        }
+        if (gameController.gameState != GameController.GameState.play) return;
+        Movement();
+        HitRoutine();
     }
 
-    public void StartHitting()
+    void Movement()
     {
-        if (!hitting)
-        StartCoroutine("Hit");
+        float hor, ver;
+
+        if (!DEBUG_CONTROLS)
+        {
+            hor = -CrossPlatformInputManager.VirtualAxisReference("Horizontal").GetValue;
+            ver = CrossPlatformInputManager.VirtualAxisReference("Vertical").GetValue;
+        }
+        else
+        {
+            hor = -Input.GetAxisRaw("Horizontal");
+            ver = Input.GetAxisRaw("Vertical");
+        }
+        
+        Vector3 movementX = new Vector3(hor, 0) * Time.deltaTime * speed;
+        Vector3 movementY = new Vector3(0, ver) * Time.deltaTime * speed;
+        if (IsWithinRange(transform.position.x + movementX.x, min.x, max.x)) transform.position += movementX;
+        if (IsWithinRange(transform.position.y + movementY.y, min.y, max.y)) transform.position += movementY;
+    }
+
+    void HitRoutine()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (!hitting)
+                StartCoroutine("Hit");
+        }
     }
 
     public bool IsWithinRange(float val, float min, float max)
@@ -81,34 +80,20 @@ public class PlayerMovement : MonoBehaviour
     IEnumerator Hit()
     {
         hitting = true;
-        gameController.control.currentState = gameController.states.hitting;
         wasp.GetComponent<Animator>().SetBool("hit", true);
-        if (!AS.isPlaying)
-        {
-            AS.PlayOneShot(swat);
-        }
+        if (!AS.isPlaying) AS.PlayOneShot(swat);
         yield return new WaitForSeconds(secondsToWait);
         wasp.GetComponent<Animator>().SetBool("hit", false);
         yield return new WaitForSeconds(secondsToWait);
         hitting = false;
-        gameController.control.currentState = gameController.states.idle;
     }
-
-
-    public void Die()
-    {
-        dead = true;
-        gameController.control.currentState = gameController.states.dead;
-        //Mostrarte la screen de q te moriste
-    }
-
 
     public void ReturnVisualsToNormal()
     {
-        this.GetComponentInChildren<SpriteRenderer>().sprite = spriteOrg;
+        GetComponentInChildren<SpriteRenderer>().sprite = spriteOrg;
     }
 
-    public void changeVisuals(string mySkin)
+    public void ChangeVisuals(string mySkin)
     {
         switch (mySkin)
         {
@@ -119,5 +104,15 @@ public class PlayerMovement : MonoBehaviour
                 GetComponentInChildren<SpriteRenderer>().sprite = flashMaterial;
                 break;
         }
+    }
+
+    public void ChangeSpeed(float toSpeed)
+    {
+        speed = toSpeed;
+    }
+
+    public void ReturnToNormalSpeed()
+    {
+        speed = orgSpeed;
     }
 }
