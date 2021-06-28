@@ -16,10 +16,7 @@ public class SpawnBabies : MonoBehaviour {
 		if (!control) control = this;
 		else Destroy(this);
 
-		
 		gameController = GameController.control;
-		Debug.Log($"GC: {gameController}");
-		Debug.Log(gameController.scoreInt.ToString());
 		StartCoroutine ("SpawnBaby");
 	}
 
