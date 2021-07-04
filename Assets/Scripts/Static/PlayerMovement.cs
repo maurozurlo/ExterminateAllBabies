@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 
@@ -11,22 +10,24 @@ public class PlayerMovement : MonoBehaviour
     public float speed;
     public bool hitting;
     public float secondsToWait;
-    public Sprite frozenMaterial, flashMaterial;
     Sprite spriteOrg;
     SpriteRenderer spriteRenderer;
     public GameObject wasp;
     AudioSource AS;
     public AudioClip swat;
     GameController gameController;
+    public static PlayerMovement control;
     public bool DEBUG_CONTROLS;
 
-    void Start()
+    void Awake()
     {
+        // Singleton Pattern
+        if (!control) control = this;
+        else Destroy(gameObject);
+        Debug.Log(control);
+
         AS = gameObject.AddComponent<AudioSource>();
-        if (accountForLevels.control != null)
-        {
-            AS.volume = accountForLevels.control.fxVolume;
-        }
+        AS.volume = LevelController.control.GetVolume("fx");
 
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         spriteOrg = spriteRenderer.sprite;
@@ -88,27 +89,19 @@ public class PlayerMovement : MonoBehaviour
         hitting = false;
     }
 
-    public void ReturnVisualsToNormal()
+    public void ChangeVisuals(Sprite overrideSprite)
     {
-        GetComponentInChildren<SpriteRenderer>().sprite = spriteOrg;
-    }
-
-    public void ChangeVisuals(string mySkin)
-    {
-        switch (mySkin)
-        {
-            case "ice":
-                GetComponentInChildren<SpriteRenderer>().sprite = frozenMaterial;
-                break;
-            case "flash":
-                GetComponentInChildren<SpriteRenderer>().sprite = flashMaterial;
-                break;
-        }
+        spriteRenderer.sprite = overrideSprite;
     }
 
     public void ChangeSpeed(float toSpeed)
     {
         speed = toSpeed;
+    }
+
+    public void ReturnVisualsToNormal()
+    {
+        spriteRenderer.sprite = spriteOrg;
     }
 
     public void ReturnToNormalSpeed()

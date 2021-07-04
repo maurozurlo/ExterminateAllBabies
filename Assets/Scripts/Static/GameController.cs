@@ -45,8 +45,7 @@ public class GameController : MonoBehaviour
         else Destroy(gameObject);
         // Initialize Level
         AS = gameObject.AddComponent<AudioSource>();
-        if (accountForLevels.control != null)
-            AS.volume = accountForLevels.control.fxVolume;
+        AS.volume = LevelController.control.GetVolume("fx");
         cam = Camera.main.GetComponent<CameraFunctions>();
         if (!cam) Debug.LogError("Camera functions not set up");
         // Countdown + GameState

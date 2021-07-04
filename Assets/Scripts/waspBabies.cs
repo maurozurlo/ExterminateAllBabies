@@ -17,8 +17,8 @@ public class waspBabies : MonoBehaviour {
 				col.gameObject.GetComponent<BabyAnimation> ().Hit ();
 				col.gameObject.GetComponentInParent<Baby> ().kill ();
 			}
-			if (col.name == "powerUp") {
-				col.gameObject.GetComponent<genericPowerUp> ().KillWithWasp ();
+			if (col.CompareTag("PowerUp")) {
+				col.gameObject.GetComponent<PowerUp>().KillWithSwatter();
 			}
 		}
 	}

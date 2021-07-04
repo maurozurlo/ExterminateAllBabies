@@ -48,11 +48,9 @@ public class BabyAnimation : MonoBehaviour {
 	// Update is called once per frame
 	public void Hit () {
 		alive = false;
-		this.GetComponent<MeshRenderer> ().material.mainTexture = hitFrame[Random.Range(0,hitFrame.Length)];
-		AS = this.gameObject.AddComponent<AudioSource> ();
-		if (accountForLevels.control != null) {
-			AS.volume = accountForLevels.control.fxVolume;
-		}
+		GetComponent<MeshRenderer> ().material.mainTexture = hitFrame[Random.Range(0,hitFrame.Length)];
+		AS = gameObject.AddComponent<AudioSource> ();
+		AS.volume = LevelController.control.GetVolume("fx");
 		AS.PlayOneShot (cry [Random.Range (0, cry.Length)]);
 		orgPos = this.transform.position;
 		shake = true;
@@ -68,10 +66,10 @@ public class BabyAnimation : MonoBehaviour {
 		}
 	}
 
-	public void reachDestination(){
+	public void ReachDestination(){
 		alive = false;
-		this.GetComponent<MeshRenderer> ().enabled = false;
-		this.GetComponent<BoxCollider> ().enabled = false;
+		GetComponent<MeshRenderer> ().enabled = false;
+		GetComponent<BoxCollider> ().enabled = false;
 		//algun coso rojo que te diga q perdiste puntos
 		Destroy (this.transform.parent.gameObject,2);
 	}
@@ -81,10 +79,10 @@ public class BabyAnimation : MonoBehaviour {
 			Instantiate (exploPrefab, pivotPoint.transform.position, Quaternion.identity);
 		}
 
-		this.GetComponent<BoxCollider> ().enabled = false;
+		GetComponent<BoxCollider> ().enabled = false;
 		AddPoints (GameController.control.howManyInARow);
 		yield return new WaitForSeconds (2);
-		Destroy (this.transform.parent.gameObject);
+		Destroy (transform.parent.gameObject);
 	}
 
 
@@ -152,10 +150,9 @@ public class BabyAnimation : MonoBehaviour {
 		}
 
 		AudioSource AS2 = this.gameObject.AddComponent<AudioSource> ();
-		if (accountForLevels.control != null) {
-			AS2.volume = accountForLevels.control.fxVolume;
-		}
-		if(clipToPlay != null)
+
+		AS2.volume = AS.volume = LevelController.control.GetVolume("fx");
+		if (clipToPlay != null)
 			AS2.PlayOneShot (clipToPlay);
 		GameController.control.scoreInt += scoreToAdd;
 		GameController.control.howManyInARow++;

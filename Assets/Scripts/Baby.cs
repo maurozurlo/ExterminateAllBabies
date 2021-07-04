@@ -22,9 +22,7 @@ public class Baby : MonoBehaviour {
 		StartCoroutine("PlayRandSound");
 		babySpeed = GameController.control.babySpeedForThisLevel;
 
-		if (accountForLevels.control != null) {
-			AS.volume = accountForLevels.control.fxVolume;
-		}
+		AS.volume = LevelController.control.GetVolume("fx");
 	}
 
 	IEnumerator RiseUp(){

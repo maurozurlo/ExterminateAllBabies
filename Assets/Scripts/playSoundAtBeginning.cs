@@ -13,9 +13,7 @@ public class playSoundAtBeginning : MonoBehaviour {
 	void Start () {
 		StartCoroutine ("playSound");
 		AS = gameObject.AddComponent<AudioSource> ();
-		if (accountForLevels.control != null) {
-			AS.volume = accountForLevels.control.fxVolume;
-		}
+		AS.volume = LevelController.control.GetVolume("fx");
 	}
 
 
@@ -29,9 +27,7 @@ public class playSoundAtBeginning : MonoBehaviour {
 	}
 
 	void PlayMusic(){
-		if (accountForLevels.control != null) {
-			AS.volume = accountForLevels.control.musicVolume;
-		}
+		AS.volume = LevelController.control.GetVolume("music");
 		AS.loop = true;
 		AS.clip = music;
 		AS.Play ();

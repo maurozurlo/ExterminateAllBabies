@@ -7,14 +7,9 @@ public class Bomb : PowerUp
     public override void ActivateEffect()
     {
         int damageForThisLevel;
-        if (accountForLevels.control != null)
-        {
-            damageForThisLevel = damage * accountForLevels.control.currentLevel;
-        }
-        else
-        {
-            damageForThisLevel = damage;
-        }
+        
+        damageForThisLevel = damage * LevelController.control.GetCurrentLevel();
+        
         DoDamage(damageForThisLevel, Color.red);
         PlayOneShot(bombSound);
         // Dissapear

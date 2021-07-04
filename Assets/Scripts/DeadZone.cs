@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class DeadZone : MonoBehaviour {
@@ -11,40 +10,33 @@ public class DeadZone : MonoBehaviour {
 	int damageForThisLevel;
 	public float delay;
 	public int tauntToPlay;
-	public bool tauntsEnabled = true;
-	PowerUpController powerUpController;
+	bool tauntsEnabled = true;
+	LevelController levelController;
+
 	void Start()
     {
-		AS = this.gameObject.AddComponent<AudioSource>();
-		if (accountForLevels.control != null)
-		{
-			tauntsEnabled = accountForLevels.control.taunt;
-			AS.volume = accountForLevels.control.fxVolume;
-		}
+		levelController = LevelController.control;
 
-		if (!tauntsEnabled)
-		{
-			probabilidad = 0;
-		}
-		powerUpController = PowerUpController.control;
+		AS = gameObject.AddComponent<AudioSource>();
+
+		tauntsEnabled = levelController.TauntsEnabled();
+		AS.volume = levelController.GetVolume("fx");
+
+		probabilidad = tauntsEnabled ? probabilidad : 0;
     }
 
 	void OnTriggerEnter(Collider col){
+		// Babies
 			if (col.name == "babyPlane") {
-				col.gameObject.GetComponent<BabyAnimation> ().reachDestination ();
-				col.gameObject.GetComponentInParent<Baby> ().kill ();
-			if (accountForLevels.control != null) {
-				damageForThisLevel = col.gameObject.GetComponentInParent<Baby> ().damage * accountForLevels.control.currentLevel;
-			} else {
-				damageForThisLevel = col.gameObject.GetComponentInParent<Baby> ().damage;
-			}
+			col.gameObject.GetComponent<BabyAnimation> ().ReachDestination ();
+			col.gameObject.GetComponentInParent<Baby> ().kill ();
+			damageForThisLevel = col.gameObject.GetComponentInParent<Baby>().damage * levelController.GetCurrentLevel();
 			GameController.control.TakeDamage(damageForThisLevel,Color.red);
-			}
-		//powerUps
-		if (col.name == "powerUp") {
-			genericPowerUp currentPowerUp = col.gameObject.GetComponent<genericPowerUp>();
-			currentPowerUp.Kill ();
-			powerUpController.ActivatePowerUp(currentPowerUp.myType.ToString(), currentPowerUp.damage);
+		}
+		// P0werUps
+		if (col.CompareTag("PowerUp")) {
+			PowerUp currentPowerUp = col.gameObject.GetComponent<PowerUp>();
+			currentPowerUp.ActivatePowerUp();
 		}
 
 		///Taunt

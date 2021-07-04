@@ -12,25 +12,26 @@ public class MenuHandler : MonoBehaviour
     AudioSource AS;
     // Start is called before the first frame update
     public GameObject[] panels;
+    LevelController levelController;
 
     private void Awake()
     {
+        levelController = LevelController.control;
         AS = GetComponent<AudioSource>();
-        // Old Code
         // Setup
-        if (accountForLevels.control && tauntToggle)
+        if (LevelController.control && tauntToggle)
         {
             // Taunts
             bool taunt = !PlayerPrefs.HasKey("taunt") || System.Convert.ToBoolean(PlayerPrefs.GetInt("taunt"));
             tauntToggle.isOn = taunt;
-            accountForLevels.control.taunt = taunt;
+            levelController.SetTaunts(taunt);
             // FX
             fxSlid.value = PlayerPrefs.HasKey("fxVol") ? PlayerPrefs.GetFloat("fxVol") : 1;
-            accountForLevels.control.fxVolume = fxSlid.value;
-            AS.volume = accountForLevels.control.fxVolume;
+            levelController.SetVolume("fx", fxSlid.value);
+            AS.volume = fxSlid.value;
             musicSlid.value = PlayerPrefs.HasKey("musicVol") ? PlayerPrefs.GetFloat("musicVol") : 1;
             // Music
-            accountForLevels.control.musicVolume = musicSlid.value;
+            levelController.SetVolume("music", musicSlid.value);
         }
     }
 
@@ -83,23 +84,12 @@ public class MenuHandler : MonoBehaviour
 
     public void SaveConfig()
     {
-        if (accountForLevels.control != null)
-        {
-            accountForLevels.control.fxVolume = fxSlid.value;
-            accountForLevels.control.musicVolume = musicSlid.value;
-            accountForLevels.control.taunt = tauntToggle.isOn;
-            PlayerPrefs.SetFloat("fxVol", fxSlid.value);
-            PlayerPrefs.SetFloat("musicVol", musicSlid.value);
-            if (tauntToggle.isOn)
-            {
-                PlayerPrefs.SetInt("taunt", 1);
-            }
-            else
-            {
-                PlayerPrefs.SetInt("taunt", 0);
-            }
-            
-        }
+        levelController.SetVolume("fx", fxSlid.value);
+        levelController.SetVolume("music", musicSlid.value);
+        levelController.SetTaunts(tauntToggle.isOn);
+        PlayerPrefs.SetFloat("fxVol", fxSlid.value);
+        PlayerPrefs.SetFloat("musicVol", musicSlid.value);
+        PlayerPrefs.SetInt("taunt", tauntToggle.isOn ? 1 : 0);
         HideAllPanels();
         DisplayPanel("Main");
     }
@@ -110,19 +100,9 @@ public class MenuHandler : MonoBehaviour
         DisplayPanel("Main");
         HelpButton.SetActive(true);
     }
-    // Ni idea que hace esto
-    string calculateLevel()
-    {
-        if (accountForLevels.control.currentLevel < accountForLevels.control.maxLevels)
-        {
-            accountForLevels.control.currentLevel++;
-            string b = "level" + accountForLevels.control.currentLevel.ToString();
-            return b;
-        }
-        else
-        {
-            return "endGame";
-        }
+    
+    string CalculateLevel(){
+        return levelController.GetNextLevel();
     }
 
     public void QuitApp()

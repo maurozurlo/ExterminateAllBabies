@@ -13,6 +13,8 @@ public abstract class PowerUp : MonoBehaviour
 	public GameObject explo;
 	// Access Singleton
 	GameController gameController;
+	PlayerMovement playerMovement;
+	MusicController musicController;
 
 	public void PlayOneShot(AudioClip clip)
     {
@@ -21,8 +23,10 @@ public abstract class PowerUp : MonoBehaviour
 
 	void Start()
 	{
+		// References
 		gameController = GameController.control;
-
+		playerMovement = PlayerMovement.control;
+		musicController = MusicController.control;
 		// Get level values
 		// Hardcoded for now...
 		toZ = 4.5f;
@@ -36,10 +40,7 @@ public abstract class PowerUp : MonoBehaviour
 		AS = GetComponent<AudioSource>();
 		StartCoroutine("RiseUp");
 		PlayLoopedSound();
-		if (accountForLevels.control != null)
-		{
-			AS.volume = accountForLevels.control.fxVolume;
-		}
+		AS.volume = LevelController.control.GetVolume("fx");
 	}
 
 	IEnumerator RiseUp() // Replace with an animation...
@@ -68,7 +69,7 @@ public abstract class PowerUp : MonoBehaviour
 		ActivateEffect();
 	}
 
-	public void KillWithWasp()
+	public void KillWithSwatter()
 	{
 		StopAllCoroutines();
 		Instantiate(explo, transform.position + new Vector3(0, 0.8f, 0), Quaternion.identity);
@@ -104,5 +105,18 @@ public abstract class PowerUp : MonoBehaviour
 		gameController.TakeDamage(damage, color);
 	}
 
+	public IEnumerator ReturnPlayerToNormal(float duration) {
+		yield return new WaitForSeconds(duration);
+		MusicController.control.ReturnPitchToNormal();
+		playerMovement.ReturnToNormalSpeed();
+		playerMovement.ReturnVisualsToNormal();
+	}
 
+	public PlayerMovement GetPlayerMovement() {
+		return playerMovement;
+    }
+
+	public MusicController GetMusicController() {
+		return musicController;
+	}
 }
