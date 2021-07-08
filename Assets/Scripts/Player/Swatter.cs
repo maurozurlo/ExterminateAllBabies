@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class waspBabies : MonoBehaviour {
+public class Swatter : MonoBehaviour {
 	PlayerMovement playerMovement;
-	public GameObject player;
 
     private void Start()
     {
-		playerMovement = player.GetComponent<PlayerMovement>();
+		playerMovement = gameObject.transform.parent.GetComponentInParent<PlayerMovement>();
     }
 
     void OnTriggerEnter(Collider col){

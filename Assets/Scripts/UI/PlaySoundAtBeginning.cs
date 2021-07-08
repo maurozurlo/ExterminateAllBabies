@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class playSoundAtBeginning : MonoBehaviour {
+public class PlaySoundAtBeginning : MonoBehaviour {
 	public AudioClip exterminateBabies;
 	public AudioClip music;
 	public bool playMusicAfterwards;

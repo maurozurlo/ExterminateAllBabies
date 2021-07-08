@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class volumeWorkAround : MonoBehaviour {
+public class VolumeWorkAround : MonoBehaviour {
 	public bool musicControl;
 	AudioSource audioSource;
 	void Start () {

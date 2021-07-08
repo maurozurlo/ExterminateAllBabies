@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class activateLevels : MonoBehaviour {
+public class ActivateLevels : MonoBehaviour {
 	public GameObject[] levels;
 	LevelController levelController;
 	// Use this for initialization

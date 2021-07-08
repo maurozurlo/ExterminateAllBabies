@@ -24,7 +24,6 @@ public class PlayerMovement : MonoBehaviour
         // Singleton Pattern
         if (!control) control = this;
         else Destroy(gameObject);
-        Debug.Log(control);
 
         AS = gameObject.AddComponent<AudioSource>();
         AS.volume = LevelController.control.GetVolume("fx");
@@ -41,7 +40,7 @@ public class PlayerMovement : MonoBehaviour
         Movement();
         HitRoutine();
     }
-
+    
     void Movement()
     {
         float hor, ver;
@@ -76,7 +75,6 @@ public class PlayerMovement : MonoBehaviour
     {
         return val >= min && val <= max;
     }
-
 
     IEnumerator Hit()
     {

@@ -6,6 +6,7 @@ TagManager:
   tags:
   - BabyEnemy
   - PowerUp
+  - LSDFX
   layers:
   - Default
   - TransparentFX
