@@ -69,7 +69,7 @@ public class BabyAnimation : MonoBehaviour {
 	public void ReachDestination(){
 		alive = false;
 		GetComponent<MeshRenderer> ().enabled = false;
-		GetComponent<BoxCollider> ().enabled = false;
+		GetComponentInParent<BoxCollider> ().enabled = false;
 		//algun coso rojo que te diga q perdiste puntos
 		Destroy (this.transform.parent.gameObject,2);
 	}
@@ -79,7 +79,7 @@ public class BabyAnimation : MonoBehaviour {
 			Instantiate (exploPrefab, pivotPoint.transform.position, Quaternion.identity);
 		}
 
-		GetComponent<BoxCollider> ().enabled = false;
+		GetComponentInParent<BoxCollider> ().enabled = false;
 		AddPoints (GameController.control.howManyInARow);
 		yield return new WaitForSeconds (2);
 		Destroy (transform.parent.gameObject);

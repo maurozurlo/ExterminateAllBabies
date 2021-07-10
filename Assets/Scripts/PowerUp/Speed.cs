@@ -1,15 +1,13 @@
 ﻿using UnityEngine;
 
-public class Speed : PowerUp
-{
+public class Speed : PowerUp {
     public Sprite overrideSprite;
     public float overrideSpeed;
     public Color explosionColor;
     public float pitchOverride;
     public float duration;
 
-    public override void ActivateEffect()
-    {
+    public override void ActivateEffect() {
         DoDamage(0, explosionColor);
         PlayerMovement playerMovement = GetPlayerMovement();
         playerMovement.ChangeSpeed(overrideSpeed);

@@ -2,8 +2,7 @@
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 
-public class PlayerMovement : MonoBehaviour
-{
+public class PlayerMovement : MonoBehaviour {
 
     public Vector2 max, min;
     private float orgSpeed;
@@ -19,8 +18,7 @@ public class PlayerMovement : MonoBehaviour
     public static PlayerMovement control;
     public bool DEBUG_CONTROLS;
 
-    void Awake()
-    {
+    void Awake() {
         // Singleton Pattern
         if (!control) control = this;
         else Destroy(gameObject);
@@ -34,50 +32,46 @@ public class PlayerMovement : MonoBehaviour
         gameController = GameController.control;
     }
 
-    void Update()
-    {
+    void Update() {
         if (gameController.gameState != GameController.GameState.play) return;
         Movement();
         HitRoutine();
     }
-    
-    void Movement()
-    {
+
+    void Movement() {
         float hor, ver;
 
-        if (!DEBUG_CONTROLS)
-        {
+        if (!DEBUG_CONTROLS) {
             hor = -CrossPlatformInputManager.VirtualAxisReference("Horizontal").GetValue;
             ver = CrossPlatformInputManager.VirtualAxisReference("Vertical").GetValue;
         }
-        else
-        {
+        else {
             hor = -Input.GetAxisRaw("Horizontal");
             ver = Input.GetAxisRaw("Vertical");
         }
-        
+
         Vector3 movementX = new Vector3(hor, 0) * Time.deltaTime * speed;
         Vector3 movementY = new Vector3(0, ver) * Time.deltaTime * speed;
         if (IsWithinRange(transform.position.x + movementX.x, min.x, max.x)) transform.position += movementX;
         if (IsWithinRange(transform.position.y + movementY.y, min.y, max.y)) transform.position += movementY;
     }
 
-    void HitRoutine()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            if (!hitting)
-                StartCoroutine("Hit");
-        }
+    void HitRoutine() {
+        if (Input.GetKeyDown(KeyCode.Space)) Hit();
     }
 
-    public bool IsWithinRange(float val, float min, float max)
-    {
+    public bool IsWithinRange(float val, float min, float max) {
         return val >= min && val <= max;
     }
 
-    IEnumerator Hit()
+    public void Hit() // Needed to call from Eventhandler in the Inspector
     {
+        if (gameController.gameState != GameController.GameState.play) return;
+        StartCoroutine("HitWrapper");
+    }
+
+    IEnumerator HitWrapper() {
+        if (hitting) yield break;
         hitting = true;
         wasp.GetComponent<Animator>().SetBool("hit", true);
         if (!AS.isPlaying) AS.PlayOneShot(swat);
@@ -87,23 +81,19 @@ public class PlayerMovement : MonoBehaviour
         hitting = false;
     }
 
-    public void ChangeVisuals(Sprite overrideSprite)
-    {
+    public void ChangeVisuals(Sprite overrideSprite) {
         spriteRenderer.sprite = overrideSprite;
     }
 
-    public void ChangeSpeed(float toSpeed)
-    {
+    public void ChangeSpeed(float toSpeed) {
         speed = toSpeed;
     }
 
-    public void ReturnVisualsToNormal()
-    {
+    public void ReturnVisualsToNormal() {
         spriteRenderer.sprite = spriteOrg;
     }
 
-    public void ReturnToNormalSpeed()
-    {
+    public void ReturnToNormalSpeed() {
         speed = orgSpeed;
     }
 }

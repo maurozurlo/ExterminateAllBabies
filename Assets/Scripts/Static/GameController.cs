@@ -32,6 +32,8 @@ public class GameController : MonoBehaviour
     //Singleton
     public static GameController control;
 
+    public GameObject _genericSpawner;
+    GenericSpawner genericSpawner;
     //Audio
     AudioSource AS;
     public AudioClip[] hurtSound;
@@ -50,6 +52,8 @@ public class GameController : MonoBehaviour
         if (!cam) Debug.LogError("Camera functions not set up");
         // Countdown + GameState
         gameState = GameState.idle;
+        // Spawner
+        genericSpawner = _genericSpawner.GetComponent<GenericSpawner>();
         UpdateUI();
         StartCoroutine("SetUpStuff");
     }
@@ -101,6 +105,7 @@ public class GameController : MonoBehaviour
         yield return new WaitForSeconds(1);
         cuentaRegresiva.text = "";
         gameState = GameState.play;
+        genericSpawner.StartSpawning();
         InvokeRepeating("IncreaseSpeed", 0, 5);
     }
 
@@ -154,7 +159,7 @@ public class GameController : MonoBehaviour
 
     public void IncreaseSpeed()
     {
-        SpawnBabies.control.IncreaseSpeed(speedMultiplier);
+        //SpawnBabies.control.IncreaseSpeed(speedMultiplier);
     }
 
     public GameState GetGameState()

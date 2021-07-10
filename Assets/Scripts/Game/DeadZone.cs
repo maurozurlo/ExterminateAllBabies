@@ -27,18 +27,17 @@ public class DeadZone : MonoBehaviour {
 
 	void OnTriggerEnter(Collider col){
 		// Babies
-			if (col.name == "babyPlane") {
-			col.gameObject.GetComponent<BabyAnimation> ().ReachDestination ();
-			col.gameObject.GetComponentInParent<Baby> ().kill ();
+		if (col.CompareTag("Enemy")) {
+			col.gameObject.GetComponent<Baby>().kill();
+			col.gameObject.GetComponentInChildren<BabyAnimation> ().ReachDestination ();
 			damageForThisLevel = col.gameObject.GetComponentInParent<Baby>().damage * levelController.GetCurrentLevel();
 			GameController.control.TakeDamage(damageForThisLevel,Color.red);
 		}
-		// P0werUps
+		// PowerUps
 		if (col.CompareTag("PowerUp")) {
 			PowerUp currentPowerUp = col.gameObject.GetComponent<PowerUp>();
 			currentPowerUp.ActivatePowerUp();
 		}
-
 		///Taunt
 		StartCoroutine ("TryAndPlay");
 	}
