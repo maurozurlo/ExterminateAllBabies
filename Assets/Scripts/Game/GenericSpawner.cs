@@ -72,4 +72,8 @@ public class GenericSpawner : MonoBehaviour {
         }
         return _dict;
     }
+
+    public bool HasChildren() {
+        return transform.childCount >= 1;
+    }
 }

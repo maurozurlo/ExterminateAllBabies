@@ -117,10 +117,10 @@ public class GameController : MonoBehaviour {
         healthPoints += healthToAdd;
         scoreCombo++;
         UpdateUI();
+        CheckForEndOfLevel();
     }
 
     public void TakeDamage(int dmgToTake, Color col) {
-        Debug.Log($"Damage {dmgToTake}");
         healthPoints -= dmgToTake;
         scoreCombo = 0; // Reset combo
         UpdateUI();
@@ -137,6 +137,7 @@ public class GameController : MonoBehaviour {
         if (dmgToTake > 0) StartCoroutine(cam.Shake(.4f, .2f));
         // Damage Screen
         StartCoroutine(DamageScreen(col));
+        CheckForEndOfLevel();
     }
 
     IEnumerator DamageScreen(Color col) {
@@ -147,7 +148,9 @@ public class GameController : MonoBehaviour {
         damageScreen.gameObject.SetActive(false);
     }
 
-    public void WeWon() {
+    public void CheckForEndOfLevel() {
+        if (enemiesSpawned != config.enemies) return; // Check if we spawned all the enemies for this level
+        if (genericSpawner.HasChildren()) return;
         StartCoroutine("WinRoutine");
     }
 

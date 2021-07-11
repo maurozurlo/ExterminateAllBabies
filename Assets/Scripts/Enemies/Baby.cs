@@ -44,10 +44,12 @@ public class Baby : MonoBehaviour {
 
 	public void KillWithSwatter() {
 		StopMoving();
+		RemoveParent();
 		animator.Hit();
 	}
 
 	public void ReachDestination() {
+		RemoveParent();
 		animator.HideAndDestroy();
 	}
 
@@ -69,5 +71,8 @@ public class Baby : MonoBehaviour {
 		StartCoroutine ("PlayRandSound");
 	}
 
+	void RemoveParent() {
+		gameObject.transform.SetParent(null);
+    }
 
 }
