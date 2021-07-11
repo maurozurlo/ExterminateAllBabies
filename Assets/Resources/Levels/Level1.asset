@@ -15,7 +15,7 @@ MonoBehaviour:
   health: 10
   enemies: 10
   powerUps: 1
-  baseSpeed: 0
+  baseSpeed: 4
   speedMultiplier: 1
   timeBetweenSpawns: {x: 5, y: 7}
   enemyPrefabs:

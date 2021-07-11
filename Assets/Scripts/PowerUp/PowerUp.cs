@@ -30,14 +30,15 @@ public abstract class PowerUp : MonoBehaviour {
         toY = -2.72f;
         boundsX = new Vector2(0, 3.33f);
         boundsZ = new Vector2(-20, -17);
-        speed = 4;
 
+        speed = gameController.GetEnemySpeed();
 
         transform.position = new Vector3(Random.Range(boundsX.x, boundsX.y), -3.53f, Random.Range(boundsZ.x, boundsZ.y));
-        AS = GetComponent<AudioSource>();
         StartCoroutine("RiseUp");
-        PlayLoopedSound();
+
+        AS = GetComponent<AudioSource>();
         AS.volume = LevelController.control.GetVolume("fx");
+        PlayLoopedSound();
     }
 
     IEnumerator RiseUp() // Replace with an animation...

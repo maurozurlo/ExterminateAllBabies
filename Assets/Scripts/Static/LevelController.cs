@@ -4,7 +4,7 @@ public class LevelController : MonoBehaviour {
 
 
 	public static LevelController control;
-	int currentLevel;
+	public int currentLevel;
 	public int maxLevels = 5;
 	public int unlockedLevel;
     private bool taunt = true;

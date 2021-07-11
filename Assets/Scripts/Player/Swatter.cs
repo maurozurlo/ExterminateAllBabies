@@ -10,8 +10,7 @@ public class Swatter : MonoBehaviour {
     void OnTriggerEnter(Collider col) {
         if (playerMovement.hitting) {
             if (col.CompareTag("Enemy")) {
-                col.gameObject.GetComponentInParent<Baby>().kill();
-                col.gameObject.GetComponentInChildren<BabyAnimation>().Hit();
+                col.gameObject.GetComponentInParent<Baby>().KillWithSwatter();
             }
             else if (col.CompareTag("PowerUp")) {
                 col.gameObject.GetComponent<PowerUp>().KillWithSwatter();

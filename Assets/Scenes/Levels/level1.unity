@@ -386,12 +386,6 @@ MonoBehaviour:
   cuentaRegresiva: {fileID: 2131520651}
   damageScreen: {fileID: 897786662}
   menuBut: {fileID: 425471320}
-  babySpeedForThisLevel: 5
-  scoreInt: 10
-  babyInt: 10
-  speedMultiplier: 1
-  delay: 3
-  howManyInARow: 0
   _genericSpawner: {fileID: 1321376957}
   hurtSound:
   - {fileID: 8300000, guid: 3e344b2464720364d8b9f5f0bce6eebe, type: 3}
@@ -930,6 +924,7 @@ GameObject:
   - component: {fileID: 384739367}
   - component: {fileID: 384739366}
   - component: {fileID: 384739370}
+  - component: {fileID: 384739371}
   m_Layer: 0
   m_Name: DeathZone
   m_TagString: Untagged
@@ -954,7 +949,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 1dbf6041167b0264fb9aacaaef768ae0, type: 3}
   - {fileID: 8300000, guid: 7456220aae300e34689ad6bcdd0a1954, type: 3}
   - {fileID: 8300000, guid: 6cde8e299195d734b8f757f6fc7202d5, type: 3}
-  probabilidad: 85
+  probabilidad: 65
   lastTauntPlayed: 0
   prob: 0
   delay: 0.2
@@ -1010,6 +1005,45 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 1
+--- !u!23 &384739371
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 384739365}
+  m_Enabled: 0
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 9a9c7bb39aee46c4ab04d9d4b7ce7adf, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
 --- !u!1 &390001442
 GameObject:
   m_ObjectHideFlags: 0
@@ -1219,7 +1253,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 070b2ed2745d68241a154eb3836ffdff, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 1

@@ -171,7 +171,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   toZ: 5.7
   toY: -2.27
-  babySpeed: 3.5
+  speed: 0
   maxX: 3.33
   minX: -4.37
   maxZ: -11.75
@@ -186,7 +186,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 96222cd230589d04d9e96e7b5cf8ef49, type: 3}
   - {fileID: 8300000, guid: 2d22cd45e16c4654b8608f1d9f34c832, type: 3}
   - {fileID: 8300000, guid: fe72a7210841bbd4898342749245026f, type: 3}
-  intervalBetweenSounds: 5
+  intervalBetweenSounds: 10
   damage: 2
 --- !u!65 &6840012152635966896
 BoxCollider:

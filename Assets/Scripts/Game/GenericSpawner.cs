@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GenericSpawner : MonoBehaviour {
-    Dictionary<GameObject, float> enemies = new Dictionary<GameObject, float>();
-    Dictionary<GameObject, float> powerups = new Dictionary<GameObject, float>();
+    Dictionary<GameObject, float> enemies;
+    Dictionary<GameObject, float> powerups;
     Vector2 timeBetweenSpawns;
     int levelPowerUps, levelEnemies;
-    int spawnedPowerUps = 0, spawnedEnemies = 0;
+    GameController control;
 
     void Start() {
         // Get config
         GameConfig config = GameInit.control.config;
+        control = GameController.control;
         // Set dictionaries
-        AddItemsToDictionary(ref enemies, config.enemyPrefabs, config.enemyWeights, "enemies");
-        AddItemsToDictionary(ref powerups, config.powerupPrefabs, config.powerUpWeights, "powerups");
+        enemies = AddItemsToDictionary(config.enemyPrefabs, config.enemyWeights);
+        powerups = AddItemsToDictionary(config.powerupPrefabs, config.powerUpWeights);
         // Get Amounts for level
         levelEnemies = config.enemies;
         levelPowerUps = config.powerUps;
@@ -26,8 +27,8 @@ public class GenericSpawner : MonoBehaviour {
     }
 
     IEnumerator Spawner() {
-        bool cantSpawnEnemy = spawnedEnemies == levelEnemies;
-        bool cantSpawnPowerUp = spawnedPowerUps == levelPowerUps;
+        bool cantSpawnEnemy = control.GetEnemiesSpawned() == levelEnemies;
+        bool cantSpawnPowerUp = control.GetPowerUpsSpawned() == levelPowerUps;
 
         if (cantSpawnEnemy && cantSpawnPowerUp) yield break; //Nothing to do
 
@@ -41,32 +42,34 @@ public class GenericSpawner : MonoBehaviour {
         StartCoroutine("Spawner");
     }
 
-    void Spawn(ref Dictionary<GameObject, float> dict, string tag, ref int counter) {
-        GameObject spawneable = GetRandom(ref dict);
-        GameObject gameObject = Instantiate(spawneable, transform.position, Quaternion.identity) as GameObject;
+    void Spawn(Dictionary<GameObject, float> dict, string tag) {
+        GameObject gameObject = Instantiate(GetRandom(dict), transform.position, Quaternion.identity) as GameObject;
         gameObject.name = tag;
         gameObject.tag = tag;
         gameObject.transform.SetParent(this.gameObject.transform);
-        counter++;
+        if (tag == "Enemy") control.IncrementEnemiesSpawned();
+        else control.IncrementPowerUpsSpawned();
     }
 
     // Helpers
     void SpawnPowerUp() {
-        Spawn(ref powerups, "PowerUp", ref spawnedPowerUps);
+        Spawn(powerups, "PowerUp");
     }
 
     void SpawnEnemy() {
-        Spawn(ref enemies, "Enemy", ref spawnedEnemies);
+        Spawn(enemies, "Enemy");
     }
 
-    GameObject GetRandom(ref Dictionary<GameObject, float> dict) {
+    GameObject GetRandom(Dictionary<GameObject, float> dict) {
         return dict.RandomElementByWeight(e => e.Value).Key;
     }
 
-    void AddItemsToDictionary(ref Dictionary<GameObject, float> dict, GameObject[] gameObjects, List<float> list, string name) {
+    Dictionary<GameObject, float> AddItemsToDictionary(GameObject[] gameObjects, List<float> list) {
+        Dictionary<GameObject, float> _dict = new Dictionary<GameObject, float>();
         int totalLength = gameObjects.Length;
         for (int i = 0; i < totalLength; i++) {
-            dict.Add(gameObjects[i], list[i]);
+            _dict.Add(gameObjects[i], list[i]);
         }
+        return _dict;
     }
 }

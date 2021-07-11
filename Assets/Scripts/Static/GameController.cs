@@ -4,8 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class GameController : MonoBehaviour
-{
+public class GameController : MonoBehaviour {
     //Game states
     // New implementation
     public enum GameState {
@@ -20,14 +19,16 @@ public class GameController : MonoBehaviour
     public Text pauseText, cuentaRegresiva;
     public Image damageScreen;
     public Button menuBut;
+    int delay = 3;
 
     //Game config
-    public int babySpeedForThisLevel = 3;
-    public int scoreInt;
-    public int babyInt;
-    public float speedMultiplier;
-    public float delay;
-    public int howManyInARow;
+    float enemySpeed;
+    int healthPoints;
+    int enemiesSpawned, powerUpsSpawned;
+    GameConfig config;
+
+    float speedMultiplier;
+    int scoreCombo; // Used to calculate Combos
 
     //Singleton
     public static GameController control;
@@ -40,12 +41,18 @@ public class GameController : MonoBehaviour
     public AudioClip youWon;
     public bool upsideDownWorld;
 
-    void Awake()
-    {
+    void Awake() {
         // Singleton Pattern
         if (!control) control = this;
         else Destroy(gameObject);
-        // Initialize Level
+
+        // Get config
+        config = GameInit.control.config;
+        healthPoints = config.health;
+        enemySpeed = config.baseSpeed;
+        speedMultiplier = config.speedMultiplier;
+
+        // Init Level
         AS = gameObject.AddComponent<AudioSource>();
         AS.volume = LevelController.control.GetVolume("fx");
         cam = Camera.main.GetComponent<CameraFunctions>();
@@ -58,46 +65,38 @@ public class GameController : MonoBehaviour
         StartCoroutine("SetUpStuff");
     }
 
-    void Update()
-    {
+    void Update() {
         if (Input.GetKeyDown(KeyCode.Escape))
             PauseRoutine();
     }
-    public void PauseRoutine()
-    {
-        if (gameState == GameState.play)
-        {
+    public void PauseRoutine() {
+        if (gameState == GameState.play) {
             Pause();
             return;
-            
+
         }
-        if(gameState == GameState.pause)
-        {
+        if (gameState == GameState.pause) {
             Resume();
             return;
         }
     }
 
-    public void Pause()
-    {
+    public void Pause() {
         gameState = GameState.pause;
         Time.timeScale = 0;
         pauseText.gameObject.SetActive(true);
         menuBut.gameObject.SetActive(true);
     }
 
-    public void Resume()
-    {
+    public void Resume() {
         gameState = GameState.play;
         Time.timeScale = 1;
         pauseText.gameObject.SetActive(false);
         menuBut.gameObject.SetActive(false);
     }
 
-    IEnumerator SetUpStuff()
-    {
-        for (int i = 0; i < delay; i++)
-        {
+    IEnumerator SetUpStuff() {
+        for (int i = 0; i < delay; i++) {
             cuentaRegresiva.text = (delay - i).ToString();
             yield return new WaitForSeconds(1);
         }
@@ -109,62 +108,87 @@ public class GameController : MonoBehaviour
         InvokeRepeating("IncreaseSpeed", 0, 5);
     }
 
-    public void UpdateUI()
-    {
-        babyText.text = "/ " + babyInt.ToString();
-        scoreText.text = "= " + scoreInt.ToString();
+    public void UpdateUI() {
+        babyText.text = $"{enemiesSpawned}/{config.enemies}";
+        scoreText.text = "= " + healthPoints.ToString();
     }
-    public void TakeDamage(int dmgToTake, Color col)
-    {
-        scoreInt -= dmgToTake;
+
+    public void AddHealth(int healthToAdd) {
+        healthPoints += healthToAdd;
+        scoreCombo++;
+        UpdateUI();
+    }
+
+    public void TakeDamage(int dmgToTake, Color col) {
+        Debug.Log($"Damage {dmgToTake}");
+        healthPoints -= dmgToTake;
+        scoreCombo = 0; // Reset combo
         UpdateUI();
         // Check if dead
-        if (scoreInt <= -1)
-        {
+        if (healthPoints <= 0) {
             gameState = GameState.end;
             SceneManager.LoadScene("GameOver");
-            return;
         }
-        howManyInARow = 0;
-        if (!AS.isPlaying){
+
+        if (!AS.isPlaying) {
             AS.PlayOneShot(hurtSound[Random.Range(0, hurtSound.Length)]);
         }
         // Camera shake
-        if(dmgToTake > 0) StartCoroutine(cam.Shake(.4f, .2f));
+        if (dmgToTake > 0) StartCoroutine(cam.Shake(.4f, .2f));
         // Damage Screen
         StartCoroutine(DamageScreen(col));
     }
 
-    IEnumerator DamageScreen(Color col)
-    {
+    IEnumerator DamageScreen(Color col) {
         damageScreen.color = col;
         damageScreen.gameObject.SetActive(true);
         damageScreen.GetComponent<ImgHandlers>().replayAnim();
         yield return new WaitForSeconds(1);
-        damageScreen.gameObject.SetActive(false); 
+        damageScreen.gameObject.SetActive(false);
     }
 
-    public void WeWon()
-    {
+    public void WeWon() {
         StartCoroutine("WinRoutine");
     }
 
-    IEnumerator WinRoutine()
-    {
+    IEnumerator WinRoutine() {
         cuentaRegresiva.text = "YOU WIN";
         AS.PlayOneShot(youWon);
         yield return new WaitForSeconds(youWon.length + 1);
         SceneManager.LoadScene("YouWon");
     }
 
-    public void IncreaseSpeed()
-    {
-        //SpawnBabies.control.IncreaseSpeed(speedMultiplier);
+    public void IncreaseSpeed() {
+        enemySpeed *= speedMultiplier;
     }
 
-    public GameState GetGameState()
-    {
+    public void IncrementEnemiesSpawned() {
+        enemiesSpawned++;
+        UpdateUI();
+    }
+
+    public void IncrementPowerUpsSpawned() {
+        powerUpsSpawned++;
+    }
+
+    public int GetEnemiesSpawned() {
+        return enemiesSpawned;
+    }
+
+    public int GetPowerUpsSpawned() {
+        return powerUpsSpawned;
+    }
+    public GameState GetGameState() {
         return gameState;
     }
+
+    public float GetEnemySpeed() {
+        return enemySpeed;
+    }
+
+    public int GetScoreCombo() {
+        return scoreCombo;
+    }
+
 
 }

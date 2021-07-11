@@ -1,28 +1,30 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Baby : MonoBehaviour {
 
 
 	public float toZ, toY;
-	public float babySpeed;
+	public float speed;
 	public float maxX,minX,maxZ,minZ;
 	public float minTime,maxTime;
-	float disp;
 	AudioSource AS;
 	public AudioClip[] randSounds;
 	public float intervalBetweenSounds;
 	public int damage = 1;
-	// Use this for initialization
+	BabyAnimation animator;
+	
 	void Start () {
-		transform.position = new Vector3 (Random.Range (minX, maxX), -3.53f,Random.Range (minZ, maxZ));
-		AS = this.gameObject.AddComponent<AudioSource> ();
-		StartCoroutine("RiseUp");
-		StartCoroutine("PlayRandSound");
-		babySpeed = GameController.control.babySpeedForThisLevel;
+		AS = gameObject.AddComponent<AudioSource>();
+		animator = GetComponentInChildren<BabyAnimation>();
 
 		AS.volume = LevelController.control.GetVolume("fx");
+
+		transform.position = new Vector3 (Random.Range (minX, maxX), -3.53f,Random.Range (minZ, maxZ));
+		StartCoroutine("RiseUp");
+		StartCoroutine("PlayRandSound");
+
+		speed = GameController.control.GetEnemySpeed();
 	}
 
 	IEnumerator RiseUp(){
@@ -35,17 +37,25 @@ public class Baby : MonoBehaviour {
 
 	IEnumerator StartWalking(){
 		while (transform.position.z < toZ) {
-			transform.position += new Vector3 (0, 0, babySpeed/100);
+			transform.position += new Vector3 (0, 0, speed / 100);
 			yield return new WaitForEndOfFrame();
 		}
 	}
 
-	public void kill(){
-		StopAllCoroutines ();
+	public void KillWithSwatter() {
+		StopMoving();
+		animator.Hit();
 	}
 
+	public void ReachDestination() {
+		animator.HideAndDestroy();
+	}
 
-	public void revive(){
+	public void StopMoving() {
+		StopAllCoroutines();
+	}
+
+	public void Restart(){
 		StartCoroutine("StartWalking");
 		StartCoroutine("PlayRandSound");
 	}
