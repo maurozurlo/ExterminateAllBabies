@@ -1,12 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public abstract class PowerUp : MonoBehaviour {
-    float toZ, toY, speed;
-    Vector2 boundsX;
-    Vector2 boundsZ;
-
-    AudioSource AS;
+public abstract class PowerUp : MovingTarget {
     public AudioClip loopSound;
     public AudioClip deathSound;
     public GameObject explo;
@@ -15,47 +10,10 @@ public abstract class PowerUp : MonoBehaviour {
     PlayerMovement playerMovement;
     MusicController musicController;
 
-    public void PlayOneShot(AudioClip clip) {
-        AS.PlayOneShot(clip);
-    }
-
-    void Start() {
-        // References
+    public override void Init() {
         gameController = GameController.control;
         playerMovement = PlayerMovement.control;
         musicController = MusicController.control;
-        // Get level values
-        // Hardcoded for now...
-        toZ = 4.5f;
-        toY = -2.72f;
-        boundsX = new Vector2(0, 3.33f);
-        boundsZ = new Vector2(-20, -17);
-
-        speed = gameController.GetEnemySpeed();
-
-        transform.position = new Vector3(Random.Range(boundsX.x, boundsX.y), -3.53f, Random.Range(boundsZ.x, boundsZ.y));
-        StartCoroutine("RiseUp");
-
-        AS = GetComponent<AudioSource>();
-        AS.volume = LevelController.control.GetVolume("fx");
-        PlayLoopedSound();
-    }
-
-    IEnumerator RiseUp() // Replace with an animation...
-    {
-        while (transform.position.y < toY) {
-            transform.position += new Vector3(0, .04f, 0);
-            yield return new WaitForEndOfFrame();
-        }
-        StartCoroutine("StartWalking");
-    }
-
-    IEnumerator StartWalking() // Get baby speed from game controller
-    {
-        while (transform.position.z < toZ) {
-            transform.position += new Vector3(0, 0, speed / 100);
-            yield return new WaitForEndOfFrame();
-        }
     }
 
     public void ActivatePowerUp() {
@@ -68,8 +26,7 @@ public abstract class PowerUp : MonoBehaviour {
         StopAllCoroutines();
         Instantiate(explo, transform.position + new Vector3(0, 0.8f, 0), Quaternion.identity);
         DeactivateVisuals();
-        AS.Stop();
-        AS.PlayOneShot(deathSound);
+        PlayOneShot(deathSound,true);
         Destroy(gameObject, deathSound.length);
     }
 
@@ -82,10 +39,9 @@ public abstract class PowerUp : MonoBehaviour {
         }
     }
 
-    void PlayLoopedSound() {
-        AS.loop = true;
-        AS.clip = loopSound;
-        AS.Play();
+    public override IEnumerator PlaySound() {
+        PlaySoundInLoop(loopSound);
+        yield break;
     }
 
     public abstract void ActivateEffect();

@@ -9,6 +9,7 @@ public class Speed : PowerUp {
 
     public override void ActivateEffect() {
         DoDamage(0, explosionColor);
+        StopAudio();
         PlayerMovement playerMovement = GetPlayerMovement();
         playerMovement.ChangeSpeed(overrideSpeed);
         playerMovement.ChangeVisuals(overrideSprite);

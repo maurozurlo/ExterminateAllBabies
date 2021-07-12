@@ -83,6 +83,7 @@ public class GameController : MonoBehaviour {
 
     public void Pause() {
         gameState = GameState.pause;
+        genericSpawner.Pause();
         Time.timeScale = 0;
         pauseText.gameObject.SetActive(true);
         menuBut.gameObject.SetActive(true);
@@ -90,6 +91,7 @@ public class GameController : MonoBehaviour {
 
     public void Resume() {
         gameState = GameState.play;
+        genericSpawner.Resume();
         Time.timeScale = 1;
         pauseText.gameObject.SetActive(false);
         menuBut.gameObject.SetActive(false);

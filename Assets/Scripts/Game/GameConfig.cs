@@ -16,9 +16,12 @@ public class GameConfig : ScriptableObject {
     [Header("PowerUps")]
     public GameObject[] powerupPrefabs;
     public List<float> powerUpWeights = new List<float>();
+    [Header("Music")]
+    public AudioClip music;
     [Header("Graphics")]
     public Material grass;
     public Material skybox;
+    public GameObject clouds;
     public Vector3 cameraPosition;
     public bool isUpsideDown;
     [Header("Graphics/Fog")]

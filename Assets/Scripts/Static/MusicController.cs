@@ -9,8 +9,12 @@ public class MusicController : MonoBehaviour
     {
         if (!control) control = this;
         else Destroy(this);
-
+        GameConfig config = GameInit.control.config;
+        
         AS = GetComponent<AudioSource>();
+        if (config.music) AS.clip = config.music;
+        else if (!config.music) Debug.LogWarning("Level has no music");
+        AS.Play();
     }
 
     public void ChangePitch(float pitch)

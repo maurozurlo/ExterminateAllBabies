@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Level1
   m_EditorClassIdentifier: 
   health: 10
-  enemies: 10
-  powerUps: 1
+  enemies: 2
+  powerUps: 50
   baseSpeed: 5
   speedMultiplier: 1.2
   timeBetweenSpawns: {x: 1, y: 3}
@@ -32,12 +32,14 @@ MonoBehaviour:
   - {fileID: 1956484971024608, guid: 7ae3bf9719bee4443ac6de81dfcbaaeb, type: 3}
   - {fileID: 1770352035602310, guid: 610ac22a2d354b741810f9bcd57ef39d, type: 3}
   powerUpWeights:
-  - 80
-  - 10
-  - 5
-  - 5
+  - 1
+  - 95
+  - 1
+  - 1
+  music: {fileID: 8300000, guid: 070b2ed2745d68241a154eb3836ffdff, type: 3}
   grass: {fileID: 2100000, guid: 94e8f466fdd6b2c41bbbad730c3e400c, type: 2}
   skybox: {fileID: 2100000, guid: 2bd75610fec2b3940985d1dd4f6614b9, type: 2}
+  clouds: {fileID: 7930316680092744413, guid: 135d26d204a2f0340a753f2d6b197362, type: 3}
   cameraPosition: {x: 0, y: 0, z: 9.24}
   isUpsideDown: 0
   hasFog: 0

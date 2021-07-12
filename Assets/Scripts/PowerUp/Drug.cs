@@ -9,6 +9,7 @@ public class Drug : PowerUp {
     float originalFOV;
     public float FOV = 17;
     public override void ActivateEffect() {
+        StopAudio();
         overlay = GameObject.FindGameObjectWithTag("LSDFX");
         ChangeOverlayState(true);
         originalFOV = Camera.main.fieldOfView;

@@ -30,7 +30,7 @@ public class GenericSpawner : MonoBehaviour {
         bool cantSpawnEnemy = control.GetEnemiesSpawned() == levelEnemies;
         bool cantSpawnPowerUp = control.GetPowerUpsSpawned() == levelPowerUps;
 
-        if (cantSpawnEnemy && cantSpawnPowerUp) yield break; //Nothing to do
+        if (cantSpawnEnemy) yield break; //Nothing to do
 
         //Decide if we're spawning an enemy or a powerup
         bool isEnemy = Random.Range(0, 1) < .5f;
@@ -75,5 +75,18 @@ public class GenericSpawner : MonoBehaviour {
 
     public bool HasChildren() {
         return transform.childCount >= 1;
+    }
+
+
+    public void Pause() {
+        foreach(Transform t in transform) {
+            t.GetComponent<MovingTarget>().StopMoving();
+        }
+    }
+
+    public void Resume() {
+        foreach (Transform t in transform) {
+            t.GetComponent<MovingTarget>().Restart();
+        }
     }
 }

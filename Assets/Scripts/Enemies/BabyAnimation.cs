@@ -59,7 +59,7 @@ public class BabyAnimation : MonoBehaviour {
     public void HideAndDestroy() {
         meshRenderer.enabled = false;
         boxCollider.enabled = false;
-        Destroy(gameObject, 2);
+        Destroy(transform.parent.gameObject, 2);
     }
 
     IEnumerator KillMe() {
